@@ -1,16 +1,41 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>One more dish</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../ESTILOS/general.css"/>
         <link rel="stylesheet" href="../ESTILOS/inicio.css"/>
     </head>
     <body>
-        <div>TODO write content</div>
+        <main>
+            <div class="imagen_registro">
+                <img src="../IMAGENES/prueba.png" alt="platillo_a_exponer"/>
+            </div>
+            <div class="formulario_registro">
+                <form action="Signup_Servlet" method="post">
+                    <h2>Crea tu cuenta</h2>
+                    <p>Registrate para pedir a domicilio y guardar tus platillos favoritos</p>
+                    
+                    <label>Nombre completo</label><br>
+                    <input type="text" name="nombre_registro" placeholder="Tu nombre"/>
+                    
+                    <label>Correo electronico</label><br>
+                    <input type="text" name="correo_registro" placeholder="nombre@correo.com"/>
+                    
+                    <label>Telefono</label><br>
+                    <input type="tel" name="telefono_registro" placeholder="000 000 0000"/>
+                    
+                    <label>Contraseña</label><br>
+                    <input type="password" name="contraseña_registro" placeholder="holamundo"/>
+                    
+                    <label>Confirmar contraseña</label><br>
+                    <input type="password" name="confirmar_contraseña" placeholder="holamundo"/>
+                    
+                </form>
+            </div>
+        </main>
         <script src="../JS/headerInicio.js"></script>
         <script src="../JS/footerInicio.js" ></script>
     </body>
-        
 </html>
