@@ -1,4 +1,4 @@
-const header = document.createElement('header');
+    const header = document.createElement('header');
 
 // nombre para css
 header.className = 'main-header';
