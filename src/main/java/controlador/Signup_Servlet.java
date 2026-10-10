@@ -1,16 +1,20 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controlador;
 
+import conexion.base_de_datos;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import modelo.Cliente;
 
 /**
  *
@@ -71,7 +75,12 @@ public class Signup_Servlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try(Connection conexion = base_de_datos.conectar()) {
+            
+            String sql = "INSERT INTO cliente VALUES(?, ?, ?, ?, ?, ?)";
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -84,4 +93,32 @@ public class Signup_Servlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    public int generarIdUnico() {
+        int id;
+
+        do {
+            id = ThreadLocalRandom.current().nextInt(100000, 1000000);
+        } while (existeId(id));
+    
+        return id;
+    }
+    
+    public boolean existeId(int id) {
+
+    String sql = "SELECT 1 FROM cliente WHERE id_cliente = ?";
+
+    try (Connection conexion = base_de_datos.conectar();
+         PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+        ps.setInt(1, id);
+
+        try (ResultSet rs = ps.executeQuery()) {
+            return rs.next();
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
+    }
+}
 }
