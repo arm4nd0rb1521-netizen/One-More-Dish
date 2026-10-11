@@ -1,12 +1,17 @@
 package controlador;
 
+import conexion.base_de_datos;
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @WebServlet(urlPatterns = {"/servlet_signin"})
 public class Signin_Servlet extends HttpServlet {
@@ -53,9 +58,69 @@ public class Signin_Servlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String correo = request.getParameter("correo_login");
+        String contra = request.getParameter("contrasena_login");
+        String casilla = request.getParameter("recordarme");
         
+        if (correo == null || contra == null) {
+            response.setContentType("text/html;charset=UTF-8");
+            response.getWriter().println(
+            "<!DOCTYPE html>" +
+            "<html lang='es'>" +
+            "<head><meta charset='UTF-8'></head>" +
+            "<body>" +
+            "<script>" +
+            "alert('Rellene todos los campos');" +
+            "window.history.back();" +
+            "</script>" +
+            "</body>" +
+            "</html>"
+            );
+            return;
+        }
         
-        processRequest(request, response);
+        try {
+            String sql = "SELECT * FROM cliente WHERE correo = ?";
+            
+            try(Connection conexion = base_de_datos.conectar()) {
+                PreparedStatement ps = conexion.prepareStatement(sql);
+                ResultSet rs;
+                
+                ps.setString(1, correo);
+                
+                rs = ps.executeQuery();
+                
+                if (rs.next()) {
+                    String contraseña_real = rs.getString("contraseña");
+
+                    if (contra.equals(contraseña_real)) {
+                        response.sendRedirect(
+                            request.getContextPath() + "/HTML/inicio_cliente.html?registro=exitoso"
+                        );
+                        return;
+                    }
+                }
+                response.setContentType("text/html;charset=UTF-8");
+                response.getWriter().println(
+                "<!DOCTYPE html>" +
+                "<html lang='es'>" +
+                "<head><meta charset='UTF-8'></head>" +
+                "<body>" +
+                "<script>" +
+                "alert('Correo y/o contraseña incorrectos');" +
+                "window.history.back();" +
+                "</script>" +
+                "</body>" +
+                "</html>"
+                );
+                
+            } catch(SQLException e) {
+                e.printStackTrace();
+            }
+            
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
