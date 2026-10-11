@@ -43,8 +43,8 @@ footerInicio.innerHTML = `
     <div class="footer_inferior">
         <p>© 2026 One More Dish. Todos los derechos reservados.</p>
         <div class="footer_legal">
-            <a href="#">Privacidad</a>
-            <a href="#">Términos</a>
+            <a href="${baseFooter}HTML/terminos_condiciones.html">Privacidad</a>
+            <a href="${baseFooter}HTML/terminos_condiciones.html">Términos</a>
         </div>
     </div>
 `;

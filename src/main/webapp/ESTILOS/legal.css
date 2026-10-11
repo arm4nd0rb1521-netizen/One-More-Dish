@@ -1,0 +1,108 @@
+/* ---------- DOCUMENTO LEGAL (términos, privacidad) ---------- */
+.documento_legal {
+    width: min(860px, 88%);
+    margin: 50px auto 20px;
+    padding: 44px 52px;
+    background: var(--blanco-suave);
+    border: 1px solid var(--rosa-claro);
+    border-radius: 28px;
+    box-shadow: 14px 14px 0 var(--rosa-claro);
+}
+
+/* Título principal */
+.documento_legal h1 {
+    font-family: var(--font-titulo);
+    font-size: clamp(26px, 4vw, 36px);
+    line-height: 1.2;
+    color: var(--vino);
+    margin-bottom: 18px;
+}
+
+/* Líneas separadoras */
+.documento_legal hr {
+    border: none;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--rosa-principal), var(--rosa-claro));
+    margin: 22px 0;
+}
+
+/* Subtítulos de cada sección */
+.documento_legal h3 {
+    font-family: var(--font-titulo);
+    font-size: 19px;
+    color: var(--vino);
+    margin: 34px 0 12px;
+    padding-left: 14px;
+    border-left: 4px solid var(--rosa-principal);
+}
+
+/* Párrafos */
+.documento_legal p {
+    font-size: 14.5px;
+    line-height: 1.8;
+    margin-bottom: 12px;
+}
+
+/* Fecha de actualización (primer párrafo después del hr) */
+.documento_legal hr + p {
+    display: inline-block;
+    font-size: 12px;
+    background: var(--rosa-claro);
+    color: var(--vino);
+    padding: 6px 16px;
+    border-radius: 999px;
+    margin-bottom: 22px;
+}
+
+.documento_legal b {
+    color: var(--vino);
+}
+
+.documento_legal a {
+    color: var(--rosa-principal);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.documento_legal a:hover {
+    color: var(--vino);
+}
+
+/* Cierre del documento: último hr + firma */
+.documento_legal hr:last-of-type {
+    margin-top: 36px;
+}
+
+.documento_legal hr:last-of-type + p {
+    font-family: var(--font-titulo);
+    font-size: 18px;
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    margin-bottom: 6px;
+}
+
+.documento_legal hr:last-of-type + p + p {
+    font-family: var(--font-titulo);
+    font-style: italic;
+    color: var(--rosa-principal);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 600px) {
+    .documento_legal {
+        width: 92%;
+        margin-top: 30px;
+        padding: 28px 22px;
+        border-radius: 22px;
+        box-shadow: 8px 8px 0 var(--rosa-claro);
+    }
+    .documento_legal h3 {
+        font-size: 17px;
+    }
+    .documento_legal p {
+        font-size: 14px;
+    }
+}

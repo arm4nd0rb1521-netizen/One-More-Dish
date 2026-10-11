@@ -1,25 +1,46 @@
 <!DOCTYPE html>
 <html>
-    <head>  
-        <title>One More Dish</title>
+    <head>
+        <title>Iniciar sesión - One More Dish</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../ESTILOS/general.css"/>
-        <link rel="stylesheet" href="../ESTILOS/inicio.css"/>
+        <link rel="stylesheet" href="../ESTILOS/inicio.css"/>      <!-- por el header y footer -->
+        <link rel="stylesheet" href="../ESTILOS/formularios.css"/>
     </head>
     <body>
         <main>
-            <div class="imagen">
-                
+            <div class="imagen_registro">
+                <img src="../IMAGENES/comidaIR.jpg" alt="platillo_a_exponer"/>
+                <p class="imagen_nota">Qué bueno verte de nuevo. Entra y pide lo que se te antoje.</p>
             </div>
-            <div class="formulario">
-                <form action="servlet_signing" method="post">
-                    
+
+            <div class="formulario_registro">
+                <form action="../servlet_signin" method="post">
+                    <h2>Inicia sesión</h2>
+                    <p>Entra con tu cuenta para ver tus pedidos, reservas y favoritos.</p>
+
+                    <label>Correo electrónico</label>
+                    <input type="email" name="correo_login" placeholder="nombre@correo.com" required/>
+
+                    <label>Contraseña</label>
+                    <input type="password" name="contrasena_login" placeholder="••••••••" required/>
+
+                    <div class="login_opciones">
+                        <label class="terminos">
+                            <input type="checkbox" name="recordarme" value="ON"/>
+                            Recordarme
+                        </label>
+                    </div>
+
+                    <input type="submit" name="iniciar_sesion" value="Iniciar sesión"/>
+
+                    <p class="form_pie">¿No tienes cuenta? <a href="signup.html">Regístrate</a></p>
                 </form>
             </div>
-            
         </main>
-            <script src="../JS/miHeader.js"></script>
-            <script src="../JS/footerInicio.js" ></script>
+
+        <script src="../JS/headerInicio.js"></script>
+        <script src="../JS/footerInicio.js"></script>
     </body>
 </html>
