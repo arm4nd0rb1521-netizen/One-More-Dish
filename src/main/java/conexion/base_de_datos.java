@@ -8,6 +8,11 @@ public class base_de_datos {
     private static final String contraseña = "ces160408";
     
     public static Connection conectar() throws SQLException {
+        try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("No se encontró el driver de MySQL", e);
+        }
         return DriverManager.getConnection(url, user, contraseña);
     }
 }

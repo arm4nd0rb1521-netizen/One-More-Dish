@@ -81,6 +81,7 @@ public class Signup_Servlet extends HttpServlet {
         String correo = request.getParameter("correo_registro");
         String confirm_contra = request.getParameter("confirmar_contraseña");
         String telefonoTexto = request.getParameter("telefono_registro");
+        String casilla = request.getParameter("terminos_condiciones");
 
         if (contraseña == null || !contraseña.equals(confirm_contra)) {
 
@@ -92,6 +93,23 @@ public class Signup_Servlet extends HttpServlet {
             "<body>" +
             "<script>" +
             "alert('Las contraseñas no coinciden');" +
+            "window.history.back();" +
+            "</script>" +
+            "</body>" +
+            "</html>"
+            );
+            return;
+        }
+        
+        if (casilla == null) {
+            response.setContentType("text/html;charset=UTF-8");
+            response.getWriter().println(
+            "<!DOCTYPE html>" +
+            "<html lang='es'>" +
+            "<head><meta charset='UTF-8'></head>" +
+            "<body>" +
+            "<script>" +
+            "alert('Acepte terminos y condiciones');" +
             "window.history.back();" +
             "</script>" +
             "</body>" +
