@@ -122,7 +122,7 @@ public class Signup_Servlet extends HttpServlet {
             int id = generar_id_unico();
 
             String sql = "INSERT INTO cliente "
-                       + "VALUES (?, ?, ?, ?, ?, ?)";
+                       + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
             try (Connection conexion = base_de_datos.conectar();
                  PreparedStatement ps = conexion.prepareStatement(sql)) {
@@ -133,6 +133,7 @@ public class Signup_Servlet extends HttpServlet {
                 ps.setString(4, correo);
                 ps.setString(5, contraseña);
                 ps.setString(6, telefonoTexto);
+                ps.setInt(7, 4);
 
                 ps.executeUpdate();
             }
