@@ -4,42 +4,54 @@
         <title>One more dish</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="../ESTILOS/general.css"/>
-        <link rel="stylesheet" href="../ESTILOS/inicio.css"/>
+            <link rel="stylesheet" href="../ESTILOS/general.css"/>
+            <link rel="stylesheet" href="../ESTILOS/inicio.css"/>      <!-- por el header y footer -->
+            <link rel="stylesheet" href="../ESTILOS/formularios.css"/>
     </head>
     <body>
         <main>
             <div class="imagen_registro">
-                <img src="../IMAGENES/prueba.png" alt="platillo_a_exponer"/>
+                <img src="../IMAGENES/comidaIR.jpg" alt="platillo_a_exponer"/>
+                 <p class="imagen_nota">Una cuenta y listo: pide más rápido y guarda tus favoritos.</p>
             </div>
             <div class="formulario_registro">
                 <form action="Signup_Servlet" method="post">
                     <h2>Crea tu cuenta</h2>
-                    <p>Registrate para pedir a domicilio y guardar tus platillos favoritos</p>
-                    
-                    <label>Nombre completo</label><br>
-                    <input type="text" name="nombre_registro" placeholder="Tu nombre"/><br>
-                    
-                    <label>Apellido</label><br>
-                    <input type="text" name="nombre_registro" placeholder="Tu apellido"/><br>
-                    
-                    <label>Correo electronico</label><br>
-                    <input type="text" name="correo_registro" placeholder="nombre@correo.com"/><br>
-                    
-                    <label>Telefono</label><br>
-                    <input type="tel" name="telefono_registro" placeholder="000 000 0000"/><br>
-                    
-                    <label>Contraseña</label><br>
-                    <input type="password" name="contraseña_registro" placeholder="....."/><br>
-                    
-                    <label>Confirmar contraseña</label><br>
-                    <input type="password" name="confirmar_contraseña" placeholder="....."/><br>
-                    
-                    <input type="checkbox" name="terminos_condiciones" value="ON" />
-                    Acepto los <b><a href="terminos_condiciones.html" target="_blank">terminos y condiciones</a></b><br><br>
-                    
-                    <input type="submit" name="crear_cuenta" value="Crear cuenta" />
-                    
+                    <p>Registrate para pedir a domicilio y guardar tus platillos favoritos.</p>
+
+                    <label>Nombre completo</label>
+                    <input type="text" name="nombre_registro" placeholder="Tu nombre"/>
+
+                    <div class="fila">
+                        <div class="campo">
+                            <label>Correo electrónico</label>
+                            <input type="email" name="correo_registro" placeholder="nombre@correo.com"/>
+                        </div>
+                        <div class="campo">
+                            <label>Teléfono</label>
+                            <input type="tel" name="telefono_registro" placeholder="000 000 0000"/>
+                        </div>
+                    </div>
+
+                    <div class="fila">
+                        <div class="campo">
+                            <label>Contraseña</label>
+                            <input type="password" name="contrasena_registro" placeholder="••••••••"/>
+                        </div>
+                        <div class="campo">
+                            <label>Confirmar contraseña</label>
+                            <input type="password" name="confirmar_contrasena" placeholder="••••••••"/>
+                        </div>
+                    </div>
+
+                    <label class="terminos">
+                        <input type="checkbox" name="terminos_condiciones" value="ON"/>
+                        Acepto los <a href="terminos_condiciones.html" target="_blank">términos y condiciones</a>
+                    </label>
+
+                    <input type="submit" name="crear_cuenta" value="Crear cuenta"/>
+
+                    <p class="form_pie">¿Ya tienes cuenta? <a href="signin.html">Inicia sesión</a></p>
                 </form>
             </div>
         </main>

@@ -1,0 +1,229 @@
+/* ---------- LAYOUT: imagen + formulario ---------- */
+main {
+    display: grid;
+    grid-template-columns: minmax(0, 400px) minmax(0, 420px);
+    justify-content: center;
+    align-items: center;
+    gap: 80px;
+    padding: 50px 6% 20px;
+}
+
+/* ---------- IMAGEN EN ARCO ---------- */
+.imagen_registro {
+    position: relative;
+    height: 430px;
+    border-radius: 200px 200px 28px 28px;
+    box-shadow: -16px 16px 0 var(--rosa-claro);
+    overflow: hidden;
+}
+
+.imagen_registro img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Nota sobre la imagen (opcional, ver HTML abajo) */
+.imagen_nota {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 22px;
+    background: var(--blanco-suave);
+    border-radius: 18px;
+    padding: 16px 20px;
+    font-family: var(--font-titulo);
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--vino);
+}
+
+/* ---------- TARJETA DEL FORMULARIO ---------- */
+.formulario_registro {
+    background: var(--blanco-suave);
+    border: 1px solid var(--rosa-claro);
+    border-radius: 28px;
+    padding: 34px;
+}
+
+.formulario_registro h2 {
+    font-family: var(--font-titulo);
+    font-size: 30px;
+    color: var(--vino);
+    margin-bottom: 8px;
+}
+
+.formulario_registro > form > p {
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 22px;
+}
+
+/* Los <br> del HTML ya no hacen falta */
+.formulario_registro br {
+    display: none;
+}
+
+/* ---------- CAMPOS ---------- */
+.formulario_registro label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--vino);
+    margin: 14px 0 6px;
+}
+
+.formulario_registro input[type="text"],
+.formulario_registro input[type="email"],
+.formulario_registro input[type="tel"],
+.formulario_registro input[type="password"] {
+    width: 100%;
+    padding: 12px 16px;
+    font-family: var(--font-texto);
+    font-size: 13px;
+    color: var(--texto);
+    background: #fff;
+    border: 1px solid #ecdde4;
+    border-radius: 14px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.formulario_registro input::placeholder {
+    color: #b9a3ae;
+}
+
+.formulario_registro input:focus {
+    border-color: var(--rosa-principal);
+    box-shadow: 0 0 0 3px rgba(212, 103, 155, .15);
+}
+
+/* Dos columnas (requiere el HTML con .fila y .campo) */
+.fila {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* ---------- TÉRMINOS ---------- */
+.formulario_registro input[type="checkbox"] {
+    accent-color: var(--rosa-principal);
+    width: 16px;
+    height: 16px;
+    margin: 18px 8px 0 0;
+    vertical-align: middle;
+}
+
+.terminos {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 18px 0 20px;
+    font-size: 12px;
+}
+
+.terminos input[type="checkbox"] {
+    margin: 0;
+}
+
+.terminos a {
+    color: var(--vino);
+    font-weight: 600;
+}
+
+/* ---------- BOTÓN ---------- */
+.formulario_registro input[type="submit"] {
+    width: 100%;
+    padding: 14px;
+    margin-top: 16px;
+    font-family: var(--font-texto);
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    background: var(--rosa-principal);
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(212, 103, 155, .35);
+    transition: transform .2s, box-shadow .2s;
+}
+
+.terminos + input[type="submit"] {
+    margin-top: 0;
+}
+
+.formulario_registro input[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(212, 103, 155, .45);
+}
+
+/* "¿Ya tienes cuenta? Inicia sesión" */
+.form_pie {
+    text-align: center;
+    font-size: 12px;
+    margin-top: 16px;
+}
+
+.form_pie a {
+    color: var(--vino);
+    font-weight: 600;
+    border-bottom: 2px solid var(--rosa-principal);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 900px) {
+    main {
+        grid-template-columns: minmax(0, 480px);
+        gap: 40px;
+    }
+    .imagen_registro {
+        height: 300px;
+        border-radius: 150px 150px 24px 24px;
+    }
+}
+
+@media (max-width: 500px) {
+    .fila {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    .formulario_registro {
+        padding: 24px 20px;
+    }
+}
+/* ---------- LOGIN: recordarme + olvidé contraseña ---------- */
+.login_opciones {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 18px 0 20px;
+}
+
+/* dentro de esta fila el checkbox no necesita margen extra */
+.login_opciones .terminos {
+    margin: 0;
+}
+
+.olvido {
+    font-size: 12px;
+    color: var(--rosa-principal);
+    font-weight: 500;
+    transition: color .2s;
+}
+
+.olvido:hover {
+    color: var(--vino);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+/* El login tiene menos campos: la imagen se ajusta a la altura de la tarjeta */
+@media (min-width: 901px) {
+    .imagen_registro {
+        height: 400px;
+    }
+}
