@@ -41,6 +41,15 @@ public class Platillo {
         this.descripcion = descripcion;
     }
     
+    public int id;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
     
     
 }
