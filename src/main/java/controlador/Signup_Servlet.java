@@ -7,14 +7,17 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import modelo.Cliente;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import util.Correo_Service;
+import util.Codigo_Service;
+
 
 /**
  *
@@ -118,41 +121,107 @@ public class Signup_Servlet extends HttpServlet {
             return;
         }
 
+        
         try {
-            int id = generar_id_unico();
+            correo = correo == null ? "" : correo.trim();
 
-            String sql = "INSERT INTO cliente "
-                       + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-            try (Connection conexion = base_de_datos.conectar();
-                 PreparedStatement ps = conexion.prepareStatement(sql)) {
-
-                ps.setInt(1, id);
-                ps.setString(2, nombre);
-                ps.setString(3, apellido);
-                ps.setString(4, correo);
-                ps.setString(5, contraseña);
-                ps.setString(6, telefonoTexto);
-                ps.setInt(7, 4);
-
-                ps.executeUpdate();
+            if (correo.isBlank()
+                    || !correo.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+                response.sendError(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "Ingresa un correo válido."
+                );
+                return;
             }
 
-            response.sendRedirect(
-                request.getContextPath() + "/index.html?registro=exitoso"
+            // Generar el código y su hash
+            String codigo = Codigo_Service.generarCodigo();
+            String hash = Codigo_Service.generarHash(codigo);
+
+            int id = generar_id_unico();
+
+            String sql ="INSERT INTO cliente" +
+                "(id_cliente, nombre, apellido, correo, contraseña," +
+                 "telefono, id_rol, correo_verificado," +
+                 "codigo_verificacion_hash, codigo_expira)" +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, FALSE, ?," +
+                        "DATE_ADD(NOW(), INTERVAL 10 MINUTE))";
+
+            try (Connection conexion = base_de_datos.conectar()) {
+
+                // Comprobar si el correo ya está registrado
+                String consulta = 
+                    "SELECT * FROM cliente WHERE correo = ?";
+
+                try (PreparedStatement ps =
+                        conexion.prepareStatement(consulta)) {
+
+                    ps.setString(1, correo);
+
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            response.sendError(
+                                HttpServletResponse.SC_CONFLICT,
+                                "Este correo ya está registrado."
+                            );
+                            return;
+                        }
+                    }
+                }
+
+                // Crear el cliente como NO verificado
+                try (PreparedStatement ps =
+                        conexion.prepareStatement(sql)) {
+
+                    ps.setInt(1, id);
+                    ps.setString(2, nombre);
+                    ps.setString(3, apellido);
+                    ps.setString(4, correo);
+                    ps.setString(5, contraseña);
+                    ps.setString(6, telefonoTexto);
+                    ps.setInt(7, 4);
+                    ps.setString(8, hash);
+
+                    ps.executeUpdate();
+                }
+            }
+
+            // Enviar el código por Resend
+            Correo_Service.enviarCodigo(correo, codigo);
+
+            // Recordar qué cuenta está pendiente de verificar
+            request.getSession().setAttribute(
+                "correoPendiente", correo
             );
 
-        } catch (NumberFormatException e) {
-            response.sendError(
-                HttpServletResponse.SC_BAD_REQUEST,
-                "El teléfono debe contener un número válido"
+            // Mostrar el formulario de verificación
+            response.sendRedirect(
+                request.getContextPath() + "/HTML/verificar_correo.html"
             );
-        } catch (SQLException e) {
+
+        } catch (java.sql.SQLException e) {
             e.printStackTrace();
+
             response.sendError(
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                "No se pudo registrar el cliente"
+                "No se pudo registrar el cliente."
             );
+
+        } catch (Exception e) {
+
+            // Mostrar el error en la consola de Java
+            e.printStackTrace(System.err);
+
+            // Enviar también el error al logger del servidor
+            Logger.getLogger(Signup_Servlet.class.getName())
+                  .log(Level.SEVERE, "ERROR EN SIGNUP", e);
+
+            if (!response.isCommitted()) {
+                response.sendError(
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Error en el registro. Revisa el log de Tomcat."
+                );
+            }
         }
     }
 

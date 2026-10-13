@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Pedido {
     
-        private int id;
+    private int id;
     public ArrayList<Platillo> platillos_pedidos = new ArrayList<>();
     public String estado;
     public boolean domicilio;
