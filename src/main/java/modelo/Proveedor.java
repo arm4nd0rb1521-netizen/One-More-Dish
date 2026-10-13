@@ -1,13 +1,16 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package modelo;
 
-/**
- *
- * @author dantetapia
- */
-public class Proveedor {
+public class Proveedor  extends Persona{
+    
+    String servicio;
+
+    public String getServicio() {
+        return servicio;
+    }
+
+    public void setServicio(String servicio) {
+        this.servicio = servicio;
+    }
+    
     
 }

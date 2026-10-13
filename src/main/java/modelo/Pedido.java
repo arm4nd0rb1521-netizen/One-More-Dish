@@ -11,17 +11,29 @@ public class Pedido {
     public boolean domicilio;
     public String direccion;
     public int id_cliente;
+    public int id_mesa;
 
     public Pedido() {
     }
 
-    public Pedido(int id, String estado, boolean domicilio, String direccion, int id_cliente) {
+    public Pedido(int id, String estado, boolean domicilio, String direccion, int id_cliente, int id_mesa) {
         this.id = id;
         this.estado = estado;
         this.domicilio = domicilio;
         this.direccion = direccion;
         this.id_cliente = id_cliente;
+        this.id_mesa = id_mesa;
     }
+
+    public int getId_mesa() {
+        return id_mesa;
+    }
+
+    public void setId_mesa(int id_mesa) {
+        this.id_mesa = id_mesa;
+    }
+
+
 
     public int getId() { 
         return id; 
@@ -73,5 +85,9 @@ public class Pedido {
     public void cancelar_pedido() {
         this.estado = "Cancelado";
     }
+    
+
+    
+    
     
 }

@@ -52,4 +52,14 @@ public class Insumo {
     }
     
     
+    public int id_proveedor;
+
+    public int getId_proveedor() {
+        return id_proveedor;
+    }
+
+    public void setId_proveedor(int id_proveedor) {
+        this.id_proveedor = id_proveedor;
+    }
+    
 }

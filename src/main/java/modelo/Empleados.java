@@ -1,13 +1,26 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package modelo;
+ 
+import java.util.ArrayList;
 
-/**
- *
- * @author dantetapia
- */
 public class Empleados {
+    
+    public ArrayList<Empleado> empleados = new ArrayList<>();
+    
+    public  void agregar_Empleado(){
+        
+    }
+    public void  eliminar_Empleado(){
+        
+    }
+    public void ver_Empleado(){
+        
+    }
+    public void modificar_Empleado(){
+        
+    }
+    public void ver_Todos(){
+        
+    }
+
     
 }

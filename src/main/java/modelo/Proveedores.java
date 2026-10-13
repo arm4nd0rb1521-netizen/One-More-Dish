@@ -1,13 +1,24 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package modelo;
 
-/**
- *
- * @author dantetapia
- */
+import java.util.ArrayList;
+
 public class Proveedores {
     
+        public ArrayList<Proveedor> proveedores = new ArrayList<>();
+
+        public  void agregar_Prov(){
+
+        }
+        public void  eliminar_Prov(){
+
+        }
+        public void ver_Prov(){
+
+        }
+        public void modificar_Prov(){
+
+        }
+        public void ver_Todos(){
+
+        }
 }
