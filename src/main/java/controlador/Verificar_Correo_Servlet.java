@@ -15,8 +15,10 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-@WebServlet(name = "Verificar_Correo_Servlet",
-            urlPatterns = {"/Verificar_Correo_Servlet"})
+@WebServlet(
+    name = "Verificar_Correo_Servlet",
+    urlPatterns = {"/Verificar_Correo_Servlet"}
+)
 public class Verificar_Correo_Servlet extends HttpServlet {
 
     @Override
@@ -25,6 +27,7 @@ public class Verificar_Correo_Servlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
+        request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
 
         HttpSession sesion = request.getSession(false);
@@ -38,9 +41,7 @@ public class Verificar_Correo_Servlet extends HttpServlet {
             return;
         }
 
-        String correo = (String)
-                sesion.getAttribute("correoPendiente");
-
+        String correo = (String) sesion.getAttribute("correoPendiente");
         String codigo = request.getParameter("codigo");
 
         if (codigo == null || !codigo.matches("[0-9]{6}")) {
@@ -55,20 +56,23 @@ public class Verificar_Correo_Servlet extends HttpServlet {
             String hash = Codigo_Service.generarHash(codigo);
 
             String sql = "UPDATE cliente SET "
-        + "correo_verificado = TRUE, "
-        + "codigo_verificacion_hash = NULL, "
-        + "codigo_expira = NULL "
-        + "WHERE correo = ?";
+                    + "correo_verificado = TRUE, "
+                    + "codigo_verificacion_hash = NULL, "
+                    + "codigo_expira = NULL "
+                    + "WHERE correo = ? "
+                    + "AND correo_verificado = FALSE "
+                    + "AND codigo_verificacion_hash = ? "
+                    + "AND codigo_expira > NOW()";
 
-            try (Connection conexion =
-                    base_de_datos.conectar();
-                 PreparedStatement ps =
-                    conexion.prepareStatement(sql)) {
+            try (Connection conexion = base_de_datos.conectar();
+                 PreparedStatement ps = conexion.prepareStatement(sql)) {
 
                 ps.setString(1, correo);
-                int filasActualizadas = ps.executeUpdate();
+                ps.setString(2, hash);
 
-                if (filasActualizadas == 1) {
+                int filas = ps.executeUpdate();
+
+                if (filas == 1) {
                     sesion.removeAttribute("correoPendiente");
 
                     response.sendRedirect(
@@ -81,9 +85,13 @@ public class Verificar_Correo_Servlet extends HttpServlet {
                     );
 
                     response.getWriter().println(
-                        "<h2>Código incorrecto o vencido.</h2>"
-                        + "<a href='verificar-correo.jsp'>"
-                        + "Intentar nuevamente</a>"
+                        "<!DOCTYPE html><html lang='es'>"
+                        + "<meta charset='UTF-8'>"
+                        + "<title>Verificación</title>"
+                        + "<body><h2>Código incorrecto o vencido</h2>"
+                        + "<p>Solicita un nuevo código si expiró.</p>"
+                        + "<a href='HTML/verificar_correo.html'>"
+                        + "Volver a intentar</a></body></html>"
                     );
                 }
             }
