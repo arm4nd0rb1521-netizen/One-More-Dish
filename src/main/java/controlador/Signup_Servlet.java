@@ -139,7 +139,8 @@ public class Signup_Servlet extends HttpServlet {
             String hash = Codigo_Service.generarHash(codigo);
 
             int id = generar_id_unico();
-
+            String contraseñaHash = util.Password_Service.generarHash(contraseña);
+            
             String sql ="INSERT INTO cliente" +
                 "(id_cliente, nombre, apellido, correo, contraseña," +
                  "telefono, id_rol, correo_verificado," +
@@ -177,7 +178,7 @@ public class Signup_Servlet extends HttpServlet {
                     ps.setString(2, nombre);
                     ps.setString(3, apellido);
                     ps.setString(4, correo);
-                    ps.setString(5, contraseña);
+                    ps.setString(5, contraseñaHash);
                     ps.setString(6, telefonoTexto);
                     ps.setInt(7, 4);
                     ps.setString(8, hash);

@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import util.Password_Service;
 
 @WebServlet(urlPatterns = {"/servlet_signin"})
 public class Signin_Servlet extends HttpServlet {
@@ -102,7 +103,7 @@ public class Signin_Servlet extends HttpServlet {
                         return;
                     }
                     
-                    if (contra.equals(contraseña_real)) {
+                    if (Password_Service.verificar(contra, contraseña_real)) {
                         response.sendRedirect(
                             request.getContextPath() + "/HTML/inicio_cliente.html?registro=exitoso"
                         );
