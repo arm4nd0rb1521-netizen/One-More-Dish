@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Agregar platillo | One More Dish</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../ESTILOS/general.css"/>
+        <link rel="stylesheet" href="../ESTILOS/inicio.css"/>        
+    </head>
+    <body>
+        <main>
+            <div class="formulario">
+                <h2>Crear nuevo platillo</h2>
+                <hr>
+                
+                <form action="../Crear_Platillo_Servlet" method="post" enctype="multipart/form-data">
+                
+                    <label>Nombre del platillo</label><br>
+                    <input type="text" name="nombre_platillo" placeholder="nombre de su platillo" maxlength="25" required/><br><br>
+
+                    <label>Descripcion</label><br>
+                    <input type="text" name="desc_platillo" placeholder="descripcion" maxlength="100" required/><br><br>
+
+                    <label>Precio del platillo</label><br>
+                    <input type="number" name="precio_platillo" placeholder="999.99" required/><br><br>
+
+                    <label for="imagen">Imagen del platillo:</label><br>
+                    <input type="file" id="imagen" name="imagen" accept="image/png, image/jpeg, image/webp" required/><br><br>
+                    
+                    <input type="submit" value="Crear" name="crear" />
+                </form>
+            </div>
+        </main>
+        <script src="..//JS/header_cocina.js"></script>
+    </body>
+</html>
