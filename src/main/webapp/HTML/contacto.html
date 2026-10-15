@@ -1,20 +1,76 @@
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/html.html to edit this template
--->
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Contacto - One More Dish</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../ESTILOS/general.css"/>
         <link rel="stylesheet" href="../ESTILOS/inicio.css"/>
+        <link rel="stylesheet" href="../ESTILOS/formularios.css"/>
+        <link rel="stylesheet" href="../ESTILOS/secciones.css"/>
     </head>
     <body>
-        <div>TODO write content</div>
+        <main>
+            <div class="imagen_registro">
+                <img src="../IMAGENES/logo.jpeg" alt="platillo_a_exponer"/>
+                <p class="imagen_nota">¿Dudas, ideas o una reserva especial? Escríbenos, siempre hay espacio para un platillo más.</p>
+            </div>
+
+            <div class="formulario_registro">
+                <form action="../Contacto_Servlet" method="post">
+                    <h2>Contáctanos</h2>
+                    <p>Déjanos tu mensaje y te responderemos lo antes posible.</p>
+
+                    <label>Nombre completo</label>
+                    <input type="text" name="nombre_contacto" placeholder="Tu nombre" required/>
+
+                    <div class="fila">
+                        <div class="campo">
+                            <label>Correo electrónico</label>
+                            <input type="email" name="correo_contacto" placeholder="nombre@correo.com" required/>
+                        </div>
+                        <div class="campo">
+                            <label>Teléfono</label>
+                            <input type="tel" name="telefono_contacto" placeholder="000 000 0000"/>
+                        </div>
+                    </div>
+
+                    <label>Asunto</label>
+                    <select name="asunto_contacto">
+                        <option value="duda">Duda general</option>
+                        <option value="reserva">Reservaciones</option>
+                        <option value="domicilio">Pedidos a domicilio</option>
+                        <option value="sugerencia">Sugerencia o queja</option>
+                        <option value="otro">Otro</option>
+                    </select>
+
+                    <label>Mensaje</label>
+                    <textarea name="mensaje_contacto" placeholder="Cuéntanos cómo podemos ayudarte" required></textarea>
+
+                    <input type="submit" name="enviar_contacto" value="Enviar mensaje"/>
+                </form>
+            </div>
+
+            <section class="contacto_info">
+                <div class="info_item">
+                    <span>Correo</span>
+                    <h3>hola@onemoredish.com</h3>
+                    <p>Respondemos en menos de 24 horas</p>
+                </div>
+                <div class="info_item">
+                    <span>Teléfono</span>
+                    <h3>+52 55 0000 0000</h3>
+                    <p>Todos los días</p>
+                </div>
+                <div class="info_item">
+                    <span>Horario</span>
+                    <h3>9:00 a 22:00</h3>
+                    <p>Lunes a domingo · Ciudad de México</p>
+                </div>
+            </section>
+        </main>
+
         <script src="../JS/headerInicio.js"></script>
-        <script src="../JS/footerInicio.js" ></script>
+        <script src="../JS/footerInicio.js"></script>
     </body>
-    
 </html>
