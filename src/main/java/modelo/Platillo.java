@@ -7,15 +7,20 @@ public class Platillo {
     public Double precio;
     public String nombre;
     public String descripcion;
+    public byte [] imagen;
 
     public Platillo() {
     }
 
-    public Platillo(Double precio, String nombre, String descripcion) {
+    public Platillo(Double precio, String nombre, String descripcion, byte[] imagen, int id) {
         this.precio = precio;
         this.nombre = nombre;
         this.descripcion = descripcion;
+        this.imagen = imagen;
+        this.id = id;
     }
+
+    
 
     public Double getPrecio() {
         return precio;
@@ -50,6 +55,12 @@ public class Platillo {
     public void setId(int id) {
         this.id = id;
     }
-    
-    
+
+    public byte[] getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(byte[] imagen) {
+        this.imagen = imagen;
+    }
 }
