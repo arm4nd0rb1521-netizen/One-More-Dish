@@ -247,21 +247,20 @@ public class Signup_Servlet extends HttpServlet {
     }
     
     public boolean existe_id(int id) {
+        String sql = "SELECT 1 FROM cliente WHERE id_cliente = ?";
 
-    String sql = "SELECT 1 FROM cliente WHERE id_cliente = ?";
+        try (Connection conexion = base_de_datos.conectar();
+             PreparedStatement ps = conexion.prepareStatement(sql)) {
+            
+            ps.setInt(1, id);
 
-    try (Connection conexion = base_de_datos.conectar();
-         PreparedStatement ps = conexion.prepareStatement(sql)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
 
-        ps.setInt(1, id);
-
-        try (ResultSet rs = ps.executeQuery()) {
-            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
-
-    } catch (SQLException e) {
-        e.printStackTrace();
-        return false;
     }
-}
 }
