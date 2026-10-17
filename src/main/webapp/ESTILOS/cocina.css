@@ -1,0 +1,179 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 16 oct 2026, 9:07:19 p.m.
+    Author     : nelly
+*/
+/* =========================================================
+   COCINA - estilos base (se comparten en las 4 páginas)
+   ========================================================= */
+
+/* Footer siempre abajo aunque haya poco contenido */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Panel crema principal, como en tu diseño */
+main.panel_cocina {
+    flex: 1;
+    width: min(1100px, 92%);
+    margin: 36px auto;
+    padding: 34px 38px 40px;
+    background: var(--blanco-suave);
+    border: 1px solid var(--rosa-claro);
+    border-radius: 30px;
+    box-shadow: 12px 12px 0 var(--rosa-claro);
+}
+
+/* Título de cada página */
+main.panel_cocina .titulo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+main.panel_cocina .titulo h1 {
+    font-family: var(--font-titulo);
+    font-size: clamp(30px, 5vw, 42px);
+    color: var(--vino);
+    line-height: 1.1;
+}
+
+main.panel_cocina hr {
+    border: none;
+    height: 3px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--rosa-principal), var(--rosa-claro));
+    margin: 18px 0 28px;
+}
+
+/* Subtítulo bajo el título */
+.subtitulo_cocina {
+    font-size: 15px;
+    margin-top: 6px;
+    opacity: .85;
+}
+
+/* ---------------- INICIO COCINA: 3 accesos grandes ---------------- */
+.accesos_cocina {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+/* Cada .fondo_botones es una tarjeta grande */
+.accesos_cocina .fondo_botones {
+    display: flex;
+}
+
+.btn_inicio_cocina {
+    position: relative;
+    width: 100%;
+    min-height: 270px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 28px 26px;
+    background: #fff;
+    border: 2px solid var(--rosa-claro);
+    border-radius: 26px;
+    color: var(--vino);
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+}
+
+.btn_inicio_cocina:hover,
+.btn_inicio_cocina:focus-visible {
+    transform: translateY(-6px);
+    border-color: var(--acento);
+    box-shadow: 0 14px 28px rgba(122, 31, 78, .16);
+    outline: none;
+}
+
+/* Color de acento por tarjeta */
+.fondo_botones.acento_menu       { --acento: var(--rosa-principal); }
+.fondo_botones.acento_inventario { --acento: #e0a23c; }
+.fondo_botones.acento_domicilio  { --acento: var(--vino); }
+
+.btn_inicio_cocina .icono {
+    width: 74px;
+    height: 74px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    border-radius: 50%;
+    background: var(--acento);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, .12);
+}
+
+.btn_inicio_cocina .etiqueta {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--acento);
+}
+
+.btn_inicio_cocina .nombre {
+    font-family: var(--font-titulo);
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.btn_inicio_cocina .detalle {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--texto);
+}
+
+.btn_inicio_cocina .entrar {
+    margin-top: auto;
+    align-self: stretch;
+    text-align: center;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--acento);
+    border-radius: 999px;
+    transition: filter .2s;
+}
+
+.btn_inicio_cocina:hover .entrar {
+    filter: brightness(1.08);
+}
+
+/* Botón "+ Agregar platillo" (lo usará menu_cocina) */
+.btn_agregar_platillo {
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--rosa-principal);
+    border-radius: 999px;
+    box-shadow: 0 6px 14px rgba(212, 103, 155, .35);
+    transition: transform .2s;
+}
+
+.btn_agregar_platillo:hover {
+    transform: translateY(-2px);
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+@media (max-width: 900px) {
+    .accesos_cocina { grid-template-columns: 1fr; }
+    .btn_inicio_cocina { min-height: auto; }
+    main.panel_cocina { padding: 26px 22px 30px; box-shadow: 8px 8px 0 var(--rosa-claro); }
+}
+
+@media (max-width: 600px) {
+    .footer_cocina_contenido { flex-direction: column; text-align: center; }
+    .footer_cocina_links { justify-content: center;  }
+}

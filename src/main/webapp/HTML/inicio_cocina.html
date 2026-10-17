@@ -6,23 +6,52 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../ESTILOS/general.css"/>
         <link rel="stylesheet" href="../ESTILOS/inicio.css"/>
+        <link rel="stylesheet" href="../ESTILOS/cocina.css"/>
     </head>
     <body>
-        <main>
+        <main class="panel_cocina">
             <div class="titulo">
-                <h1>Cocina</h1>
+                <div>
+                    <h1>Cocina</h1>
+                    <p class="subtitulo_cocina">¿Qué quieres revisar ahora?</p>
+                </div>
             </div>
             <hr>
-            <div class="fondo_botones">
-                <a href="menu_cocina.html" class="btn_inicio_cocina">Menú</a>
-            </div>
-            <div class="fondo_botones">
-                <a href="inventario.html" class="btn_inicio_cocina">Inventario</a>
-            </div>
-            <div class="fondo_botones">
-                <a href="pedidos_domicio.html" class="btn_inicio_cocina">Pedidos a domicilio</a>
+
+            <div class="accesos_cocina">
+                <div class="fondo_botones acento_menu">
+                    <a href="menu_cocina.html" class="btn_inicio_cocina">
+                        <span class="icono">🍽️</span>
+                        <span class="etiqueta">Platillos</span>
+                        <span class="nombre">Menú</span>
+                        <span class="detalle">Consulta, agrega o edita los platillos que se preparan.</span>
+                        <span class="entrar">Abrir menú</span>
+                    </a>
+                </div>
+
+                <div class="fondo_botones acento_inventario">
+                    <a href="inventario.html" class="btn_inicio_cocina">
+                        <span class="icono">📦</span>
+                        <span class="etiqueta">Insumos</span>
+                        <span class="nombre">Inventario</span>
+                        <span class="detalle">Revisa existencias y actualiza piezas y kilos.</span>
+                        <span class="entrar">Abrir inventario</span>
+                    </a>
+                </div>
+
+                <div class="fondo_botones acento_domicilio">
+                    <a href="pedidos_domicio.html" class="btn_inicio_cocina">
+                        <span class="icono">🛵</span>
+                        <span class="etiqueta">Entregas</span>
+                        <span class="nombre">Pedidos a domicilio</span>
+                        <span class="detalle">Mira los pedidos pendientes y prepáralos a tiempo.</span>
+                        <span class="entrar">Ver pedidos</span>
+                    </a>
+                </div>
             </div>
         </main>
-        <script src="..//JS/header_cocina.js"></script>
+
+        <script src="../JS/header_cocina.js"></script>
+        <script src="../JS/footer_cocina.js"></script>
     </body>
 </html>
