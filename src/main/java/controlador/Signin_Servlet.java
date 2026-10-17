@@ -81,10 +81,10 @@ public class Signin_Servlet extends HttpServlet {
         }
         
         try {
-            String sql = "SELECT * FROM cliente WHERE correo = ?";
+            String sql_cliente = "SELECT * FROM cliente WHERE correo = ?";
             
             try(Connection conexion = base_de_datos.conectar()) {
-                PreparedStatement ps = conexion.prepareStatement(sql);
+                PreparedStatement ps = conexion.prepareStatement(sql_cliente);
                 ResultSet rs;
                 
                 ps.setString(1, correo);
@@ -108,6 +108,47 @@ public class Signin_Servlet extends HttpServlet {
                             request.getContextPath() + "/HTML/inicio_cliente.html?registro=exitoso"
                         );
                         return;
+                    }
+                } else {
+                    String sql_empleado = "SELECT * FROM empleado WHERE correo = ?";
+                    PreparedStatement ps_empleado = conexion.prepareStatement(sql_empleado);
+                    
+                    ps_empleado.setString(1, correo);
+                    
+                    rs = ps_empleado.executeQuery();
+                    
+                    if(rs.next()) {
+                        String contraseña_real = rs.getString("contraseña");
+                        int rol_empleado = rs.getInt("id_rol");
+                        
+                        switch (rol_empleado) {
+                            case 1:
+                                if (Password_Service.verificar(contra, contraseña_real)) {
+                                    response.sendRedirect(request.getContextPath() + "/HTML/inicio_admin.html?registro=exitoso");
+                                    break;
+                                }
+                                
+                            case 2:
+                                if (Password_Service.verificar(contra, contraseña_real)) {
+                                    response.sendRedirect(request.getContextPath() + "/HTML/inicio_mesero.html?registro=exitoso");
+                                    break;
+                                }
+                                
+                            case 3:
+                                if (Password_Service.verificar(contra, contraseña_real)) {
+                                    response.sendRedirect(request.getContextPath() + "/HTML/inicio_cocina.html?registro=exitoso");
+                                    break;
+                                }
+                                
+                            case 5:
+                                if (Password_Service.verificar(contra, contraseña_real)) {
+                                    response.sendRedirect(request.getContextPath() + "/HTML/inicio_proveedor.html?registro=exitoso");
+                                    break;
+                                }
+                                
+                            default:
+                                throw new AssertionError();
+                        }
                     }
                 }
                 response.setContentType("text/html;charset=UTF-8");

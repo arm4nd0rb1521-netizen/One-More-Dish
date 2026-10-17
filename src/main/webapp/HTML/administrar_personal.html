@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Administrar personal | One More Dish</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+         <link rel="stylesheet" href="../ESTILOS/general.css"/>
+        <link rel="stylesheet" href="../ESTILOS/inicio.css"/>  
+    </head>
+    <body>
+        <h1>Administrar personal</h1>
+        <section>
+            <div>
+                <h2>Datos del personal</h2>
+                <hr>
+                <label>Nombre: </label>
+                <input type="text" name="nombre"/><br>
+                
+                <label>Puesto: </label>
+                <select name="puestos">
+                    <option value="mesero">Mesero</option>
+                    <option value="cocinero">Cocinero</option>
+                    <option value="supervisor">Supervisor</option>
+                </select><br>
+                
+                <label>Horario: </label>
+                <input type="time" name="horario_entrada" required/> - 
+                <input type="time" name="horario_salida" required/>
+            </div>
+            <div>
+                <label>Confirmar modificacion con clave de permiso</label>
+                <input type="password" name="clave_confirm" placeholder="tu clave"/>
+                
+                <input type="submit" value="Confirmar" name="confirmar" />
+            </div>
+            
+            <button name="eliminar">Eliminar</button>
+            <button name="actualizar">Actualizar</button>
+            <button name="añadir">Añadir</button>
+        </section>
+        <script src="../JS/header_admin.js"></script>
+    </body>
+</html>
