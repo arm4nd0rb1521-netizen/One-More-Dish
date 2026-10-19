@@ -1,28 +1,92 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Cliente | One More Dish</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="../ESTILOS/general.css"/>
-        <link rel="stylesheet" href="../ESTILOS/inicio.css"/>
-    </head>
-    <body>
-        <main>
+<html lang="es">
+<head>
+    <title>Inicio | One More Dish</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../ESTILOS/general.css"/>
+    <link rel="stylesheet" href="../ESTILOS/inicio.css"/>
+    <link rel="stylesheet" href="../ESTILOS/cliente.css"/>
+</head>
+<body>
+    <main class="contenido_cliente">
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero_texto">
+                <h1>Tu próximo platillo favorito, a un clic</h1>
+                <p>Descubre nuestro menú, elige lo que se te antoja y recíbelo en la puerta de tu casa.</p>
+                <div class="hero_botones">
+                    <a href="" class="btn btn_lleno">Ver Platillos</a>
+                    <a href="pedidos_domicio.html" class="btn btn_borde">Pedir a domicilio</a>
+                </div>
+            </div>
+
+            <div class="hero_visual">
+                <div class="arco">
+                    <div class="circulo circulo_grande"></div>
+                    <div class="circulo circulo_rojo1"></div>
+                    <div class="circulo circulo_rojo2"></div>
+                    <div class="arco_nota">“Cada platillo se prepara al momento, con ingredientes frescos.”</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel_cliente">
             <div class="titulo">
-                <h1>Bienvenido a One More Dish</h1>
-                <p>El sazón de la abuela</p>
+                <div>
+                    <h1>Bienvenido</h1>
+                    <p class="subtitulo_cliente">¿Qué se te antoja hoy?</p>
+                </div>
             </div>
             <hr>
-            <h3>¿Qué desea realizar</h3>
-            
-            <div class="fondo">
-                <a href="" class="btn_inicio_cliente">Ver menú</a>
+
+            <div class="accesos_cliente">
+                <div class="fondo_botones acento_platillos">
+                    <a href="FALTA MENU CLIENTE" class="btn_inicio_cliente">
+                        <span class="icono">🍽️</span>
+                        <span class="etiqueta">Platillos</span>
+                        <span class="nombre">Nuestro menú</span>
+                        <span class="detalle">Explora los platillos disponibles y elige tus favoritos.</span>
+                        <span class="entrar">Ver platillos</span>
+                    </a>
+                </div>
+
+                <div class="fondo_botones acento_pedidos">
+                    <a href="pedidos_domicio.html" class="btn_inicio_cliente">
+                        <span class="icono">🛵</span>
+                        <span class="etiqueta">Entregas</span>
+                        <span class="nombre">Pedidos a domicilio</span>
+                        <span class="detalle">Haz tu pedido y sigue su estado hasta que llegue a tu casa.</span>
+                        <span class="entrar">Hacer pedido</span>
+                    </a>
+                </div>
             </div>
-            
-            <div class="fondo">
-                <a href="" class="btn_inicio_cliente">Pedir a domicilio</a>
+        </section>
+
+        <!-- PASOS -->
+        <section class="pasos_cliente">
+            <div class="paso">
+                <span>Paso 1</span>
+                <h3>Elige</h3>
+                <p>Revisa el menú y escoge tus platillos.</p>
             </div>
-        </main>
-    </body>
+            <div class="paso">
+                <span>Paso 2</span>
+                <h3>Ordena</h3>
+                <p>Confirma tu pedido y tu dirección de entrega.</p>
+            </div>
+            <div class="paso">
+                <span>Paso 3</span>
+                <h3>Disfruta</h3>
+                <p>Lo preparamos a tiempo y te lo llevamos.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="../JS/header_cliente.js"></script>
+    <script src="../JS/footer_cliente.js"></script>
+</body>
 </html>
+
