@@ -176,4 +176,853 @@ main.panel_cocina hr {
 @media (max-width: 600px) {
     .footer_cocina_contenido { flex-direction: column; text-align: center; }
     .footer_cocina_links { justify-content: center;  }
+    
+}
+
+/* ---------------- MENÚ COCINA ---------------- */
+.buscador {
+    width: 100%;
+    max-width: 380px;
+    padding: 12px 18px;
+    margin-bottom: 24px;
+    font-family: var(--font-texto);
+    font-size: 14px;
+    color: var(--texto);
+    background: #fff;
+    border: 1px solid #ecdde4;
+    border-radius: 999px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.buscador:focus {
+    border-color: var(--rosa-principal);
+    box-shadow: 0 0 0 3px rgba(212, 103, 155, .15);
+}
+
+.grid_platillos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 22px;
+}
+
+.tarjeta_platillo {
+    position: relative;
+    background: #fff;
+    border: 1px solid var(--rosa-claro);
+    border-radius: 20px;
+    transition: transform .2s, box-shadow .2s;
+}
+
+.tarjeta_platillo:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(122, 31, 78, .14);
+}
+
+.tarjeta_platillo .foto {
+    height: 150px;
+    overflow: hidden;
+    border-radius: 19px 19px 0 0;
+    background: var(--rosa-claro);
+}
+
+.tarjeta_platillo .foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Sin foto: fondo rosa con un plato */
+.tarjeta_platillo .foto.sin_foto {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tarjeta_platillo .foto.sin_foto::before {
+    content: "🍽️";
+    font-size: 44px;
+}
+
+.info_platillo {
+    padding: 14px 16px 18px;
+}
+
+.info_platillo h3 {
+    font-family: var(--font-titulo);
+    font-size: 17px;
+    color: var(--vino);
+    margin-bottom: 4px;
+}
+
+.info_platillo p {
+    font-size: 12px;
+    line-height: 1.5;
+    min-height: 36px;
+    margin-bottom: 10px;
+}
+
+.precio_platillo {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--rosa-principal);
+}
+
+/* Botón ⋯ y su menú */
+.btn_opciones {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
+    line-height: 1;
+    color: var(--vino);
+    background: rgba(255, 255, 255, .92);
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .18);
+}
+
+.btn_opciones:hover {
+    background: #fff;
+}
+
+.menu_flotante {
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    z-index: 5;
+    background: #fff;
+    border: 1px solid var(--rosa-claro);
+    border-radius: 14px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, .16);
+    overflow: hidden;
+}
+
+.menu_flotante button {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 13px;
+    text-align: left;
+    color: #9b2c2c;
+    background: none;
+    border: none;
+    white-space: nowrap;
+}
+
+.menu_flotante button:hover {
+    background: #fdeaea;
+}
+
+.vacio_menu {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 50px 20px;
+    font-size: 15px;
+    color: var(--texto);
+    background: var(--rosa-fondo);
+    border: 2px dashed var(--rosa-claro);
+    border-radius: 20px;
+}
+
+.aviso_menu {
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    border-radius: 14px;
+    font-size: 13px;
+}
+
+.aviso_menu.ok {
+    background: #e8f5ec;
+    color: #2d6a45;
+    border: 1px solid #bfe0cb;
+}
+
+.aviso_menu.error {
+    background: #fdeaea;
+    color: #9b2c2c;
+    border: 1px solid #f2c4c4;
+}
+
+/* ---------------- FORMULARIO: AGREGAR PLATILLO ---------------- */
+
+/* Tarjeta más angosta y centrada, en lugar del panel ancho */
+main.pagina_formulario {
+    width: min(620px, 92%);
+}
+
+.panel_cocina .formulario h2 {
+    font-family: var(--font-titulo);
+    font-size: clamp(26px, 4vw, 34px);
+    color: var(--vino);
+    line-height: 1.15;
+}
+
+/* Los <br> del HTML ya no hacen falta */
+.panel_cocina .formulario br {
+    display: none;
+}
+
+.panel_cocina .formulario label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--vino);
+    margin: 20px 0 8px;
+}
+
+/* Campos */
+.panel_cocina .formulario input[type="text"],
+.panel_cocina .formulario input[type="number"] {
+    width: 100%;
+    padding: 14px 18px;
+    font-family: var(--font-texto);
+    font-size: 15px;
+    color: var(--texto);
+    background: #fff;
+    border: 1px solid #ecdde4;
+    border-radius: 14px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.panel_cocina .formulario input::placeholder {
+    color: #b9a3ae;
+}
+
+.panel_cocina .formulario input[type="text"]:focus,
+.panel_cocina .formulario input[type="number"]:focus {
+    border-color: var(--rosa-principal);
+    box-shadow: 0 0 0 3px rgba(212, 103, 155, .15);
+}
+
+/* Selector de archivo */
+.panel_cocina .formulario input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    font-family: var(--font-texto);
+    font-size: 13px;
+    color: var(--texto);
+    background: #fff;
+    border: 2px dashed var(--rosa-claro);
+    border-radius: 14px;
+}
+
+.panel_cocina .formulario input[type="file"]::file-selector-button {
+    padding: 10px 18px;
+    margin-right: 14px;
+    font-family: var(--font-texto);
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    background: var(--rosa-principal);
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+/* Vista previa de la foto */
+.vista_previa {
+    display: block;
+    width: 100%;
+    max-height: 220px;
+    margin-top: 16px;
+    object-fit: cover;
+    border-radius: 18px;
+    border: 1px solid var(--rosa-claro);
+}
+
+/* Botones */
+.acciones_form {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 14px;
+    margin-top: 28px;
+}
+
+.acciones_form input[type="submit"] {
+    padding: 13px 34px;
+    font-family: var(--font-texto);
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--rosa-principal);
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(212, 103, 155, .35);
+    transition: transform .2s, box-shadow .2s;
+}
+
+.acciones_form input[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(212, 103, 155, .45);
+}
+
+.btn_cancelar {
+    padding: 12px 26px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--rosa-principal);
+    border: 1px solid var(--rosa-principal);
+    border-radius: 999px;
+    transition: background .2s;
+}
+
+.btn_cancelar:hover {
+    background: var(--rosa-claro);
+}
+
+@media (max-width: 500px) {
+    .acciones_form {
+        flex-direction: column-reverse;
+    }
+    .acciones_form input[type="submit"],
+    .btn_cancelar {
+        width: 100%;
+        text-align: center;
+    }
+}
+/* ---------------- INVENTARIO ---------------- */
+
+/* Evita que display:flex/grid anule el atributo hidden */
+[hidden] {
+    display: none !important;
+}
+
+.btn_principal {
+    padding: 12px 24px;
+    font-family: var(--font-texto);
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--rosa-principal);
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(212, 103, 155, .35);
+    transition: transform .2s;
+}
+
+.btn_principal:hover {
+    transform: translateY(-2px);
+}
+
+.btn_principal:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+/* Resumen */
+.chips_inventario {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.chip {
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--vino);
+    background: #fff;
+    border: 1px solid var(--rosa-claro);
+    border-radius: 999px;
+}
+
+.chip b {
+    font-size: 17px;
+    margin-right: 4px;
+}
+
+.chip_alerta {
+    color: #8a5a00;
+    background: #fff6e5;
+    border-color: #f3d9a4;
+}
+
+.chip_mal {
+    color: #9b2c2c;
+    background: #fdeaea;
+    border-color: #f2c4c4;
+}
+
+/* Formulario de producto nuevo */
+.form_nuevo {
+    margin-bottom: 26px;
+    padding: 22px 24px;
+    background: #fff;
+    border: 2px solid var(--rosa-principal);
+    border-radius: 22px;
+}
+
+.form_nuevo h2 {
+    font-family: var(--font-titulo);
+    font-size: 20px;
+    color: var(--vino);
+    margin-bottom: 14px;
+}
+
+.grid_nuevo {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1.4fr;
+    gap: 16px;
+}
+
+.form_nuevo label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--vino);
+}
+
+.form_nuevo input,
+.fila_insumo input[type="date"] {
+    width: 100%;
+    margin-top: 6px;
+    padding: 11px 14px;
+    font-family: var(--font-texto);
+    font-size: 14px;
+    color: var(--texto);
+    background: #fff;
+    border: 1px solid #ecdde4;
+    border-radius: 12px;
+    outline: none;
+}
+
+.form_nuevo input:focus,
+.fila_insumo input:focus {
+    border-color: var(--rosa-principal);
+    box-shadow: 0 0 0 3px rgba(212, 103, 155, .15);
+}
+
+/* Filas de insumos */
+.fila_insumo {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px 28px;
+    margin-bottom: 14px;
+    padding: 18px 22px;
+    background: #fff;
+    border: 1px solid var(--rosa-claro);
+    border-radius: 20px;
+    transition: box-shadow .2s;
+}
+
+.fila_insumo:hover {
+    box-shadow: 0 8px 20px rgba(122, 31, 78, .10);
+}
+
+.fila_cab {
+    flex: 1 1 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.fila_cab h3 {
+    font-family: var(--font-titulo);
+    font-size: 21px;
+    color: var(--vino);
+}
+
+.fila_campos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 22px;
+}
+
+.grupo_inv .etiqueta_inv {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--rosa-principal);
+}
+
+.grupo_inv input[type="date"] {
+    margin-top: 0;
+    height: 44px;
+}
+
+/* Botones − y + */
+.stepper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.stepper button {
+    width: 40px;
+    height: 44px;
+    font-size: 20px;
+    line-height: 1;
+    color: var(--vino);
+    background: var(--rosa-claro);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.stepper button:hover {
+    background: #ecb9cb;
+}
+
+.stepper input {
+    width: 76px;
+    height: 44px;
+    margin: 0;
+    padding: 0 6px;
+    text-align: center;
+    font-family: var(--font-texto);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--vino);
+    background: #fff;
+    border: 1px solid #ecdde4;
+    border-radius: 12px;
+    outline: none;
+}
+
+.fila_acciones {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.btn_quitar {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+    color: #9b2c2c;
+    background: #fff;
+    border: 1px solid #f2c4c4;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.btn_quitar:hover {
+    background: #fdeaea;
+}
+
+/* Etiquetas de estado */
+.badge {
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 999px;
+}
+
+.badge.alerta {
+    color: #8a5a00;
+    background: #fff1d0;
+}
+
+.badge.mal {
+    color: #9b2c2c;
+    background: #fdeaea;
+}
+
+/* Aviso flotante */
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 26px;
+    z-index: 20;
+    padding: 12px 24px;
+    font-size: 14px;
+    color: #fff;
+    background: var(--vino);
+    border-radius: 999px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, .25);
+    opacity: 0;
+    transform: translate(-50%, 20px);
+    pointer-events: none;
+    transition: opacity .25s, transform .25s;
+}
+
+.toast.visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.toast.error {
+    background: #9b2c2c;
+}
+
+@media (max-width: 800px) {
+    .grid_nuevo { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 500px) {
+    .grid_nuevo { grid-template-columns: 1fr; }
+    .fila_acciones { width: 100%; justify-content: space-between; margin-left: 0; }
+}
+/* ---------------- PEDIDOS A DOMICILIO ---------------- */
+.tabs_pedidos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.tab_pedido {
+    padding: 11px 20px;
+    font-family: var(--font-texto);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--vino);
+    background: #fff;
+    border: 1px solid var(--rosa-claro);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+}
+
+.tab_pedido b {
+    margin-left: 8px;
+    padding: 2px 9px;
+    font-size: 12px;
+    background: var(--rosa-claro);
+    border-radius: 999px;
+}
+
+.tab_pedido.activa {
+    color: #fff;
+    background: var(--rosa-principal);
+    border-color: var(--rosa-principal);
+}
+
+.tab_pedido.activa b {
+    color: var(--vino);
+    background: #fff;
+}
+
+/* Fila de pedido */
+.fila_pedido {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px 22px;
+    margin-bottom: 14px;
+    padding: 18px 22px;
+    background: #fff;
+    border: 1px solid var(--rosa-claro);
+    border-left: 6px solid var(--rosa-principal);
+    border-radius: 20px;
+    transition: box-shadow .2s;
+}
+
+.fila_pedido:hover {
+    box-shadow: 0 8px 20px rgba(122, 31, 78, .10);
+}
+
+/* Pendiente desde hace 15 min o más */
+.fila_pedido.urgente {
+    background: #fff8f6;
+    border-left-color: #d94a3a;
+}
+
+.pedido_num {
+    min-width: 64px;
+    font-family: var(--font-titulo);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--vino);
+}
+
+.pedido_datos {
+    flex: 1 1 220px;
+}
+
+.pedido_datos h3 {
+    font-family: var(--font-titulo);
+    font-size: 19px;
+    color: var(--vino);
+    margin-bottom: 3px;
+}
+
+.pedido_datos p {
+    font-size: 13px;
+}
+
+.pedido_dir {
+    margin-top: 2px;
+    opacity: .8;
+}
+
+/* Etiquetas de estado */
+.estado {
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 999px;
+}
+
+.est_pendiente      { color: #8a5a00; background: #fff1d0; }
+.est_en_preparacion { color: var(--vino); background: var(--rosa-claro); }
+.est_listo          { color: #2d6a45; background: #e8f5ec; }
+.est_cancelado      { color: #666; background: #eee; }
+
+/* Ventana de detalle */
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal[hidden] {
+    display: none;
+}
+
+.modal_fondo {
+    position: absolute;
+    inset: 0;
+    background: rgba(60, 12, 36, .55);
+}
+
+.modal_caja {
+    position: relative;
+    width: min(520px, 100%);
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 28px 28px 24px;
+    background: var(--blanco-suave);
+    border-radius: 26px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .3);
+}
+
+.modal_x {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 38px;
+    height: 38px;
+    font-size: 15px;
+    color: var(--vino);
+    background: var(--rosa-claro);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.modal_cab {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0 44px 18px 0;
+}
+
+.modal_cab h2 {
+    font-family: var(--font-titulo);
+    font-size: 28px;
+    color: var(--vino);
+}
+
+.modal_datos {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 16px 18px;
+    background: #fff;
+    border: 1px solid var(--rosa-claro);
+    border-radius: 16px;
+}
+
+.modal_dato span {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--rosa-principal);
+}
+
+.modal_dato strong {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--texto);
+}
+
+.modal_platillos {
+    list-style: none;
+    margin-bottom: 14px;
+}
+
+.modal_platillos li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--rosa-claro);
+}
+
+.modal_platillos .cant {
+    min-width: 48px;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--rosa-principal);
+}
+
+.modal_platillos .nom {
+    flex: 1;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--vino);
+}
+
+.modal_platillos .sub {
+    font-size: 14px;
+    opacity: .8;
+}
+
+.sin_platillos {
+    font-size: 14px;
+    opacity: .8;
+}
+
+.modal_total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 15px;
+    color: var(--vino);
+}
+
+.modal_total strong {
+    font-size: 24px;
+}
+
+.btn_grande {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+}
+
+.nota_modal {
+    text-align: center;
+    font-size: 14px;
+    opacity: .85;
+}
+
+.sin_scroll {
+    overflow: hidden;
+}
+
+@media (max-width: 500px) {
+    .fila_pedido .btn_principal { width: 100%; }
+    .modal_caja { padding: 22px 18px; }
 }

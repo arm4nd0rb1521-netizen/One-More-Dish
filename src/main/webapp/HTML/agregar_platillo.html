@@ -5,16 +5,17 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../ESTILOS/general.css"/>
-        <link rel="stylesheet" href="../ESTILOS/inicio.css"/>        
+        <link rel="stylesheet" href="../ESTILOS/inicio.css"/>
+        <link rel="stylesheet" href="../ESTILOS/cocina.css"/>
     </head>
     <body>
-        <main>
+        <main class="panel_cocina pagina_formulario">
             <div class="formulario">
                 <h2>Crear nuevo platillo</h2>
                 <hr>
-                
+
                 <form action="../Crear_Platillo_Servlet" method="post" enctype="multipart/form-data">
-                
+
                     <label>Nombre del platillo</label><br>
                     <input type="text" name="nombre_platillo" placeholder="nombre de su platillo" maxlength="25" required/><br><br>
 
@@ -22,15 +23,34 @@
                     <input type="text" name="desc_platillo" placeholder="descripcion" maxlength="100" required/><br><br>
 
                     <label>Precio del platillo</label><br>
-                    <input type="number" name="precio_platillo" placeholder="999.99" required/><br><br>
+                    <input type="number" name="precio_platillo" placeholder="999.99" step="0.01" min="0" max="999.99" required/><br><br>
 
                     <label for="imagen">Imagen del platillo:</label><br>
                     <input type="file" id="imagen" name="imagen" accept="image/png, image/jpeg, image/webp" required/><br><br>
-                    
-                    <input type="submit" value="Crear" name="crear" />
+
+                    <img id="vista_previa" class="vista_previa" alt="Vista previa del platillo" hidden/>
+
+                    <div class="acciones_form">
+                        <a href="menu_cocina.html" class="btn_cancelar">Cancelar</a>
+                        <input type="submit" value="Crear" name="crear" />
+                    </div>
                 </form>
             </div>
         </main>
-        <script src="..//JS/header_cocina.js"></script>
+
+        <script src="../JS/header_cocina.js"></script>
+        <script src="../JS/footer_cocina.js"></script>
+        <script>
+            // Muestra la foto elegida antes de guardar
+            const inputImagen = document.getElementById('imagen');
+            const vista = document.getElementById('vista_previa');
+
+            inputImagen.addEventListener('change', () => {
+                const archivo = inputImagen.files[0];
+                if (!archivo) { vista.hidden = true; return; }
+                vista.src = URL.createObjectURL(archivo);
+                vista.hidden = false;
+            });
+        </script>
     </body>
 </html>

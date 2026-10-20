@@ -81,7 +81,9 @@ public class Crear_Platillo_Servlet extends HttpServlet {
         platillo.setPrecio(precio);
         platillo.setImagen(imagen);
         
-        platillo_dao.insertar(platillo);
+        boolean ok = platillo_dao.insertar(platillo);
+        response.sendRedirect(request.getContextPath()
+        + (ok ? "/HTML/menu_cocina.html?creado=1" : "/HTML/agregar_platillo.html?error=1"));
     }
 
     @Override

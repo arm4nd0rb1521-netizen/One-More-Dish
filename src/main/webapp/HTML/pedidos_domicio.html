@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
     <head>
         <title>Pedidos a domicilio | One More Dish</title>
@@ -7,8 +6,253 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../ESTILOS/general.css"/>
         <link rel="stylesheet" href="../ESTILOS/inicio.css"/>
+        <link rel="stylesheet" href="../ESTILOS/cocina.css"/>
     </head>
     <body>
-        <script src="..//JS/header_cocina.js"></script>
+        <main class="panel_cocina">
+            <div class="titulo">
+                <h1>Pedidos a domicilio</h1>
+                <button type="button" class="btn_principal" id="btn_actualizar">↻ Actualizar</button>
+            </div>
+            <hr>
+
+            <div class="tabs_pedidos" id="tabs">
+                <button type="button" class="tab_pedido activa" data-filtro="pendiente">Pendientes <b>0</b></button>
+                <button type="button" class="tab_pedido" data-filtro="en preparacion">En preparación <b>0</b></button>
+                <button type="button" class="tab_pedido" data-filtro="listo">Listos <b>0</b></button>
+                <button type="button" class="tab_pedido" data-filtro="todos">Todos <b>0</b></button>
+            </div>
+
+            <section id="lista_pedidos"></section>
+        </main>
+
+        <!-- Ventana con el detalle del pedido -->
+        <div id="modal_pedido" class="modal" hidden>
+            <div class="modal_fondo" id="modal_fondo"></div>
+            <div class="modal_caja" role="dialog" aria-modal="true" id="modal_contenido"></div>
+        </div>
+
+        <div id="toast" class="toast" role="status"></div>
+
+        <script src="../JS/header_cocina.js"></script>
+        <script src="../JS/footer_cocina.js"></script>
+        <script>
+            (function () {
+                const API = '../Pedidos_Domicilio_Servlet';
+                const lista = document.getElementById('lista_pedidos');
+                const tabs = document.querySelectorAll('.tab_pedido');
+                const modal = document.getElementById('modal_pedido');
+                const caja = document.getElementById('modal_contenido');
+                const toast = document.getElementById('toast');
+                let pedidos = [];
+                let filtro = 'pendiente';
+
+                function el(tag, clase, texto) {
+                    const e = document.createElement(tag);
+                    if (clase) e.className = clase;
+                    if (texto !== undefined) e.textContent = texto;
+                    return e;
+                }
+
+                function avisar(texto, tipo) {
+                    toast.textContent = texto;
+                    toast.className = 'toast ' + (tipo || 'ok') + ' visible';
+                    clearTimeout(avisar.t);
+                    avisar.t = setTimeout(() => toast.classList.remove('visible'), 2600);
+                }
+
+                // "En preparación" -> "en preparacion" (para comparar sin acentos ni mayúsculas)
+                const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+                function minutos(p) {
+                    return p.fecha ? (Date.now() - new Date(p.fecha).getTime()) / 60000 : 0;
+                }
+
+                function hace(p) {
+                    if (!p.fecha) return 'Sin fecha';
+                    const m = Math.floor(minutos(p));
+                    if (m < 1) return 'Hace un momento';
+                    if (m < 60) return 'Hace ' + m + ' min';
+                    if (m < 1440) return 'Hace ' + Math.floor(m / 60) + ' h';
+                    return new Date(p.fecha).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' });
+                }
+
+                function etiqueta(estado) {
+                    const e = el('span', 'estado est_' + norm(estado).replace(/\s+/g, '_'), estado);
+                    return e;
+                }
+
+                async function enviar(datos) {
+                    const r = await fetch(API, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                        body: new URLSearchParams(datos)
+                    });
+                    const j = await r.json();
+                    if (!j.ok) throw new Error(j.mensaje || 'No se pudo completar la acción');
+                }
+
+                // ----- Lista -----
+                function fila(p) {
+                    const urgente = norm(p.estado) === 'pendiente' && minutos(p) >= 15;
+                    const art = el('article', 'fila_pedido' + (urgente ? ' urgente' : ''));
+
+                    const datos = el('div', 'pedido_datos');
+                    datos.append(
+                        el('h3', '', p.cliente),
+                        el('p', '', hace(p) + ' · ' + p.articulos + (p.articulos === 1 ? ' platillo' : ' platillos')),
+                        el('p', 'pedido_dir', p.direccion || 'Sin dirección')
+                    );
+
+                    const ver = el('button', 'btn_principal', 'Ver pedido');
+                    ver.type = 'button';
+                    ver.onclick = () => abrir(p.id);
+
+                    art.append(el('div', 'pedido_num', '#' + p.id), datos, etiqueta(p.estado), ver);
+                    return art;
+                }
+
+                function render() {
+                    tabs.forEach(t => {
+                        const f = t.dataset.filtro;
+                        t.querySelector('b').textContent =
+                            f === 'todos' ? pedidos.length : pedidos.filter(p => norm(p.estado) === f).length;
+                        t.classList.toggle('activa', f === filtro);
+                    });
+
+                    const visibles = pedidos.filter(p => filtro === 'todos' || norm(p.estado) === filtro);
+                    // Lo más antiguo primero en lo que falta preparar; lo más nuevo primero en el resto
+                    const antiguoPrimero = filtro === 'pendiente' || filtro === 'en preparacion';
+                    visibles.sort((a, b) => {
+                        const d = new Date(a.fecha || 0) - new Date(b.fecha || 0);
+                        return antiguoPrimero ? d : -d;
+                    });
+
+                    lista.replaceChildren(...visibles.map(fila));
+                    if (visibles.length === 0) {
+                        const textos = {
+                            'pendiente': 'No hay pedidos pendientes. ¡Todo al día!',
+                            'en preparacion': 'No hay pedidos en preparación.',
+                            'listo': 'Todavía no hay pedidos listos.',
+                            'todos': 'Aún no hay pedidos a domicilio.'
+                        };
+                        lista.append(el('div', 'vacio_menu', textos[filtro]));
+                    }
+                }
+
+                function cargar(silencioso) {
+                    return fetch(API)
+                        .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+                        .then(datos => { pedidos = datos; render(); })
+                        .catch(() => {
+                            if (silencioso) return;
+                            lista.replaceChildren(el('div', 'vacio_menu',
+                                'No se pudieron cargar los pedidos. Revisa el servidor y la base de datos.'));
+                        });
+                }
+
+                // ----- Detalle -----
+                function cerrar() {
+                    modal.hidden = true;
+                    document.body.classList.remove('sin_scroll');
+                }
+
+                function pintarModal(d) {
+                    caja.replaceChildren();
+
+                    const x = el('button', 'modal_x', '✕');
+                    x.type = 'button';
+                    x.setAttribute('aria-label', 'Cerrar');
+                    x.onclick = cerrar;
+
+                    const cab = el('div', 'modal_cab');
+                    cab.append(el('h2', '', 'Pedido #' + d.id), etiqueta(d.estado));
+
+                    const datos = el('div', 'modal_datos');
+                    [
+                        ['Cliente', d.cliente],
+                        ['Teléfono', d.telefono || 'Sin teléfono'],
+                        ['Dirección', d.direccion || 'Sin dirección'],
+                        ['Pedido', d.fecha ? new Date(d.fecha).toLocaleString('es-MX',
+                            { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Sin fecha']
+                    ].forEach(([et, valor]) => {
+                        const fila = el('div', 'modal_dato');
+                        fila.append(el('span', '', et), el('strong', '', valor));
+                        datos.append(fila);
+                    });
+
+                    const ul = el('ul', 'modal_platillos');
+                    if (d.platillos.length === 0) {
+                        ul.append(el('li', 'sin_platillos', 'Este pedido no tiene platillos.'));
+                    }
+                    d.platillos.forEach(p => {
+                        const li = el('li');
+                        li.append(
+                            el('span', 'cant', p.cantidad + '×'),
+                            el('span', 'nom', p.nombre),
+                            el('span', 'sub', '$' + (p.precio * p.cantidad).toFixed(2))
+                        );
+                        ul.append(li);
+                    });
+
+                    const total = el('div', 'modal_total');
+                    total.append(el('span', '', 'Total'), el('strong', '', '$' + Number(d.total).toFixed(2)));
+
+                    const acciones = el('div', 'modal_acciones');
+                    const e = norm(d.estado);
+                    const siguiente = e === 'pendiente' ? ['Empezar a preparar', 'preparacion']
+                                    : e === 'en preparacion' ? ['Marcar como listo', 'listo'] : null;
+
+                    if (siguiente) {
+                        const b = el('button', 'btn_principal btn_grande', siguiente[0]);
+                        b.type = 'button';
+                        b.onclick = () => cambiarEstado(d.id, siguiente[1], b);
+                        acciones.append(b);
+                    } else {
+                        acciones.append(el('p', 'nota_modal',
+                            e === 'listo' ? 'Este pedido ya está listo para entregarse.' : 'Este pedido ya no se puede modificar.'));
+                    }
+
+                    caja.append(x, cab, datos, ul, total, acciones);
+                }
+
+                async function abrir(id) {
+                    try {
+                        const r = await fetch(API + '?id=' + id);
+                        if (!r.ok) throw new Error();
+                        pintarModal(await r.json());
+                        modal.hidden = false;
+                        document.body.classList.add('sin_scroll');
+                    } catch (e) {
+                        avisar('No se pudo abrir el pedido', 'error');
+                    }
+                }
+
+                async function cambiarEstado(id, clave, boton) {
+                    boton.disabled = true;
+                    try {
+                        await enviar({ id, estado: clave });
+                        const p = pedidos.find(x => x.id === id);
+                        if (p) p.estado = clave === 'preparacion' ? 'En preparación' : 'Listo';
+                        cerrar();
+                        render();
+                        avisar('Pedido #' + id + (clave === 'listo' ? ' listo' : ' en preparación'));
+                    } catch (e) {
+                        avisar(e.message, 'error');
+                        boton.disabled = false;
+                    }
+                }
+
+                // ----- Eventos -----
+                tabs.forEach(t => t.addEventListener('click', () => { filtro = t.dataset.filtro; render(); }));
+                document.getElementById('btn_actualizar').onclick = () => cargar(false).then(() => avisar('Lista actualizada'));
+                document.getElementById('modal_fondo').onclick = cerrar;
+                document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrar(); });
+
+                cargar(false);
+                // Se refresca solo cada 30 s (sin molestar si hay un pedido abierto)
+                setInterval(() => { if (modal.hidden && !document.hidden) cargar(true); }, 30000);
+            })();
+        </script>
     </body>
 </html>

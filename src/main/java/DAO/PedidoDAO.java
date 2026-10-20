@@ -4,6 +4,8 @@ package DAO;
 import java.sql.*;
 import modelo.Pedido;
 import conexion.base_de_datos;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.ArrayList;
 
 public class PedidoDAO {
@@ -163,6 +165,98 @@ public class PedidoDAO {
             e.printStackTrace();
             return false;
         }
+    }
+        // ===== PEDIDOS A DOMICILIO (vista de cocina) =====
+
+    // Devuelve null si hubo un error de base de datos
+    public ArrayList<Map<String, Object>> listarDomicilios() {
+        ArrayList<Map<String, Object>> lista = new ArrayList<>();
+        String sql = "SELECT p.id_pedido, p.estado, p.direccion, p.fecha, c.nombre, c.apellido, "
+                   + "(SELECT COUNT(*) FROM pedido_platillo pp WHERE pp.id_pedido = p.id_pedido) AS articulos "
+                   + "FROM pedido p LEFT JOIN cliente c ON c.id_cliente = p.id_cliente "
+                   + "WHERE p.domicilio = TRUE ORDER BY p.fecha DESC, p.id_pedido DESC";
+
+        try (Connection con = base_de_datos.conectar();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Map<String, Object> m = new LinkedHashMap<>();
+                m.put("id", rs.getInt("id_pedido"));
+                m.put("estado", rs.getString("estado"));
+                m.put("direccion", rs.getString("direccion"));
+                Timestamp f = rs.getTimestamp("fecha");
+                m.put("fecha", f != null ? f.toLocalDateTime().toString() : null);
+                m.put("cliente", nombreCliente(rs.getString("nombre"), rs.getString("apellido")));
+                m.put("articulos", rs.getInt("articulos"));
+                lista.add(m);
+            }
+            return lista;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // Devuelve null si el pedido no existe, no es a domicilio o hubo error
+    public Map<String, Object> detalleDomicilio(int id) {
+        String sqlPedido = "SELECT p.id_pedido, p.estado, p.direccion, p.fecha, "
+                         + "c.nombre, c.apellido, c.telefono "
+                         + "FROM pedido p LEFT JOIN cliente c ON c.id_cliente = p.id_cliente "
+                         + "WHERE p.id_pedido = ? AND p.domicilio = TRUE";
+        String sqlPlatillos = "SELECT pl.nombre, pl.precio, COUNT(*) AS cantidad "
+                            + "FROM pedido_platillo pp INNER JOIN platillo pl ON pp.id_platillo = pl.id_platillo "
+                            + "WHERE pp.id_pedido = ? GROUP BY pl.id_platillo, pl.nombre, pl.precio "
+                            + "ORDER BY pl.nombre";
+
+        try (Connection con = base_de_datos.conectar()) {
+            Map<String, Object> m = new LinkedHashMap<>();
+
+            try (PreparedStatement ps = con.prepareStatement(sqlPedido)) {
+                ps.setInt(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) return null;
+                    m.put("id", rs.getInt("id_pedido"));
+                    m.put("estado", rs.getString("estado"));
+                    m.put("direccion", rs.getString("direccion"));
+                    Timestamp f = rs.getTimestamp("fecha");
+                    m.put("fecha", f != null ? f.toLocalDateTime().toString() : null);
+                    m.put("cliente", nombreCliente(rs.getString("nombre"), rs.getString("apellido")));
+                    m.put("telefono", rs.getString("telefono"));
+                }
+            }
+
+            ArrayList<Map<String, Object>> platillos = new ArrayList<>();
+            double total = 0;
+            try (PreparedStatement ps = con.prepareStatement(sqlPlatillos)) {
+                ps.setInt(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        Map<String, Object> p = new LinkedHashMap<>();
+                        int cantidad = rs.getInt("cantidad");
+                        double precio = rs.getDouble("precio");
+                        p.put("nombre", rs.getString("nombre"));
+                        p.put("cantidad", cantidad);
+                        p.put("precio", precio);
+                        platillos.add(p);
+                        total += precio * cantidad;
+                    }
+                }
+            }
+            m.put("platillos", platillos);
+            m.put("total", Math.round(total * 100) / 100.0);
+            return m;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static String nombreCliente(String nombre, String apellido) {
+        String completo = ((nombre == null ? "" : nombre) + " " + (apellido == null ? "" : apellido)).trim();
+        return completo.isEmpty() ? "Cliente" : completo;
     }
 
     /** Equivale a Cocina.actualizarEstadoPedido(): cambia solo el estado. */

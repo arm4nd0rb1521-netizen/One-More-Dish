@@ -8,6 +8,8 @@ public class Insumo {
     public String nombre;
     public Double stock;
     public LocalDate caducidad;
+      public Integer piezas = 0;
+    public Double kilos = 0.0;
 
     public Insumo() {
     }
@@ -60,6 +62,22 @@ public class Insumo {
 
     public void setId_proveedor(int id_proveedor) {
         this.id_proveedor = id_proveedor;
+    }
+    
+    public Integer getPiezas() {
+        return piezas;
+    }
+
+    public void setPiezas(Integer piezas) {
+        this.piezas = piezas;
+    }
+
+    public Double getKilos() {
+        return kilos;
+    }
+
+    public void setKilos(Double kilos) {
+        this.kilos = kilos;
     }
     
 }

@@ -116,6 +116,22 @@ public class PlatilloDAO {
             return false;
         }
     }
+            public byte[] obtenerImagen(int id) {
+            String sql = "SELECT imagen FROM platillo WHERE id_platillo = ?";
+
+            try (Connection con = base_de_datos.conectar();
+                 PreparedStatement ps = con.prepareStatement(sql)) {
+
+                ps.setInt(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) return rs.getBytes("imagen");
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
 
     // ----- Relación platillo <-> insumo (tabla platillo_insumo) -----
 

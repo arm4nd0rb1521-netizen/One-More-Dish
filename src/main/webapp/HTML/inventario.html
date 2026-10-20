@@ -6,8 +6,288 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../ESTILOS/general.css"/>
         <link rel="stylesheet" href="../ESTILOS/inicio.css"/>
+        <link rel="stylesheet" href="../ESTILOS/cocina.css"/>
     </head>
     <body>
-        <script src="..//JS/header_cocina.js"></script>
+        <main class="panel_cocina">
+            <div class="titulo">
+                <h1>Inventario</h1>
+                <button type="button" class="btn_principal" id="btn_nuevo">+ Agregar producto</button>
+            </div>
+            <hr>
+
+            <div class="chips_inventario">
+                <span class="chip"><b id="n_total">0</b> productos</span>
+                <span class="chip chip_alerta"><b id="n_caducar">0</b> por caducar</span>
+                <span class="chip chip_mal"><b id="n_agotado">0</b> agotados</span>
+            </div>
+
+            <form id="form_nuevo" class="form_nuevo" hidden>
+                <h2>Nuevo producto</h2>
+                <div class="grid_nuevo">
+                    <label>Nombre
+                        <input type="text" id="nuevo_nombre" maxlength="25" placeholder="Ej. Arroz" required>
+                    </label>
+                    <label>Piezas
+                        <input type="number" id="nuevo_piezas" min="0" step="1" value="0">
+                    </label>
+                    <label>Kilos
+                        <input type="number" id="nuevo_kilos" min="0" step="0.01" value="0">
+                    </label>
+                    <label>Caducidad (opcional)
+                        <input type="date" id="nuevo_caducidad">
+                    </label>
+                </div>
+                <div class="acciones_form">
+                    <button type="button" class="btn_cancelar" id="btn_cancelar_nuevo">Cancelar</button>
+                    <button type="submit" class="btn_principal">Guardar producto</button>
+                </div>
+            </form>
+
+            <input type="search" id="buscar" class="buscador"
+                   placeholder="Buscar producto…" aria-label="Buscar producto">
+
+            <section id="lista_insumos"></section>
+        </main>
+
+        <div id="toast" class="toast" role="status"></div>
+
+        <script src="../JS/header_cocina.js"></script>
+        <script src="../JS/footer_cocina.js"></script>
+        <script>
+            (function () {
+                const API = '../Inventario_Servlet';
+                const lista = document.getElementById('lista_insumos');
+                const buscar = document.getElementById('buscar');
+                const toast = document.getElementById('toast');
+                const formNuevo = document.getElementById('form_nuevo');
+                let insumos = [];
+
+                const hoy = new Date();
+                hoy.setHours(0, 0, 0, 0);
+
+                function el(tag, clase, texto) {
+                    const e = document.createElement(tag);
+                    if (clase) e.className = clase;
+                    if (texto !== undefined) e.textContent = texto;
+                    return e;
+                }
+
+                function avisar(texto, tipo) {
+                    toast.textContent = texto;
+                    toast.className = 'toast ' + (tipo || 'ok') + ' visible';
+                    clearTimeout(avisar.t);
+                    avisar.t = setTimeout(() => toast.classList.remove('visible'), 2600);
+                }
+
+                async function enviar(datos) {
+                    const r = await fetch(API, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                        body: new URLSearchParams(datos)
+                    });
+                    const j = await r.json();
+                    if (!j.ok) throw new Error(j.mensaje || 'No se pudo completar la acción');
+                    return j;
+                }
+
+                // Días que faltan para caducar (null si no tiene fecha)
+                function dias(caducidad) {
+                    if (!caducidad) return null;
+                    const [y, m, d] = caducidad.split('-').map(Number);
+                    return Math.round((new Date(y, m - 1, d) - hoy) / 86400000);
+                }
+
+                function estado(i) {
+                    const d = dias(i.caducidad);
+                    if (d !== null && d < 0) return ['Caducado', 'mal'];
+                    if (d !== null && d <= 7) {
+                        return [d === 0 ? 'Caduca hoy' : 'Caduca en ' + d + (d === 1 ? ' día' : ' días'), 'alerta'];
+                    }
+                    if (i.piezas === 0 && i.kilos === 0) return ['Agotado', 'mal'];
+                    return null;
+                }
+
+                function resumen() {
+                    document.getElementById('n_total').textContent = insumos.length;
+                    document.getElementById('n_caducar').textContent =
+                        insumos.filter(i => { const d = dias(i.caducidad); return d !== null && d <= 7; }).length;
+                    document.getElementById('n_agotado').textContent =
+                        insumos.filter(i => i.piezas === 0 && i.kilos === 0).length;
+                }
+
+                // Control con botones − y +
+                function stepper(valor, paso, decimales) {
+                    const caja = el('div', 'stepper');
+                    const menos = el('button', '', '−');
+                    const mas = el('button', '', '+');
+                    menos.type = mas.type = 'button';
+                    menos.setAttribute('aria-label', 'Restar');
+                    mas.setAttribute('aria-label', 'Sumar');
+
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.min = '0';
+                    input.step = decimales ? '0.01' : '1';
+                    input.value = valor;
+
+                    const mover = delta => {
+                        const v = Math.max(0, (parseFloat(input.value) || 0) + delta);
+                        input.value = +v.toFixed(2);
+                        input.dispatchEvent(new Event('input'));
+                    };
+                    menos.onclick = () => mover(-paso);
+                    mas.onclick = () => mover(paso);
+
+                    caja.append(menos, input, mas);
+                    return { caja, input };
+                }
+
+                function grupo(etiqueta, control) {
+                    const g = el('div', 'grupo_inv');
+                    g.append(el('span', 'etiqueta_inv', etiqueta), control);
+                    return g;
+                }
+
+                function fila(i) {
+                    const art = el('article', 'fila_insumo');
+
+                    const cab = el('div', 'fila_cab');
+                    const badge = el('span', 'badge');
+                    cab.append(el('h3', '', i.nombre), badge);
+
+                    const pz = stepper(i.piezas, 1, false);
+                    const kg = stepper(i.kilos, 0.5, true);
+                    const cad = document.createElement('input');
+                    cad.type = 'date';
+                    cad.value = i.caducidad || '';
+
+                    const campos = el('div', 'fila_campos');
+                    campos.append(grupo('Piezas', pz.caja), grupo('Kilos', kg.caja), grupo('Caducidad', cad));
+
+                    const guardar = el('button', 'btn_principal', 'Guardar');
+                    guardar.type = 'button';
+                    guardar.hidden = true;
+
+                    const quitar = el('button', 'btn_quitar', '✕');
+                    quitar.type = 'button';
+                    quitar.title = 'Eliminar';
+                    quitar.setAttribute('aria-label', 'Eliminar ' + i.nombre);
+
+                    const acciones = el('div', 'fila_acciones');
+                    acciones.append(guardar, quitar);
+
+                    function pintar() {
+                        const e = estado(i);
+                        badge.hidden = !e;
+                        if (e) { badge.textContent = e[0]; badge.className = 'badge ' + e[1]; }
+                    }
+
+                    // "Guardar" solo aparece si hay cambios
+                    function revisar() {
+                        guardar.hidden =
+                            (parseInt(pz.input.value, 10) || 0) === i.piezas &&
+                            (parseFloat(kg.input.value) || 0) === i.kilos &&
+                            cad.value === (i.caducidad || '');
+                    }
+                    [pz.input, kg.input, cad].forEach(c => c.addEventListener('input', revisar));
+
+                    guardar.onclick = async () => {
+                        const piezas = parseInt(pz.input.value, 10) || 0;
+                        const kilos = parseFloat(kg.input.value) || 0;
+                        guardar.disabled = true;
+                        try {
+                            await enviar({ accion: 'actualizar', id: i.id, piezas, kilos, caducidad: cad.value });
+                            i.piezas = piezas;
+                            i.kilos = kilos;
+                            i.caducidad = cad.value || null;
+                            pintar(); revisar(); resumen();
+                            avisar('Guardado: ' + i.nombre);
+                        } catch (e) {
+                            avisar(e.message, 'error');
+                        } finally {
+                            guardar.disabled = false;
+                        }
+                    };
+
+                    quitar.onclick = async () => {
+                        if (!confirm('¿Eliminar "' + i.nombre + '" del inventario?')) return;
+                        try {
+                            await enviar({ accion: 'eliminar', id: i.id });
+                            insumos = insumos.filter(x => x.id !== i.id);
+                            render();
+                            avisar('Eliminado: ' + i.nombre);
+                        } catch (e) {
+                            avisar(e.message, 'error');
+                        }
+                    };
+
+                    pintar();
+                    art.append(cab, campos, acciones);
+                    return art;
+                }
+
+                function mensajeVacio(texto) {
+                    return el('div', 'vacio_menu', texto);
+                }
+
+                function render() {
+                    const f = buscar.value.trim().toLowerCase();
+                    const visibles = insumos.filter(i => i.nombre.toLowerCase().includes(f));
+
+                    lista.replaceChildren(...visibles.map(fila));
+                    if (visibles.length === 0) {
+                        lista.append(mensajeVacio(insumos.length === 0
+                            ? 'Aún no hay productos. Usa "Agregar producto" para empezar.'
+                            : 'No encontramos productos con ese nombre.'));
+                    }
+                    resumen();
+                }
+
+                function cargar() {
+                    return fetch(API)
+                        .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+                        .then(datos => { insumos = datos; render(); })
+                        .catch(() => {
+                            lista.replaceChildren(mensajeVacio(
+                                'No se pudo cargar el inventario. Revisa el servidor y la base de datos.'));
+                        });
+                }
+
+                // ----- Agregar producto -----
+                document.getElementById('btn_nuevo').onclick = () => {
+                    formNuevo.hidden = !formNuevo.hidden;
+                    if (!formNuevo.hidden) document.getElementById('nuevo_nombre').focus();
+                };
+                document.getElementById('btn_cancelar_nuevo').onclick = () => {
+                    formNuevo.hidden = true;
+                    formNuevo.reset();
+                };
+
+                formNuevo.addEventListener('submit', async e => {
+                    e.preventDefault();
+                    const nombre = document.getElementById('nuevo_nombre').value.trim();
+                    if (!nombre) { avisar('Escribe el nombre del producto', 'error'); return; }
+                    try {
+                        await enviar({
+                            accion: 'crear',
+                            nombre,
+                            piezas: document.getElementById('nuevo_piezas').value || 0,
+                            kilos: document.getElementById('nuevo_kilos').value || 0,
+                            caducidad: document.getElementById('nuevo_caducidad').value
+                        });
+                        formNuevo.reset();
+                        formNuevo.hidden = true;
+                        await cargar();
+                        avisar('Producto agregado: ' + nombre);
+                    } catch (err) {
+                        avisar(err.message, 'error');
+                    }
+                });
+
+                buscar.addEventListener('input', render);
+                cargar();
+            })();
+        </script>
     </body>
 </html>
