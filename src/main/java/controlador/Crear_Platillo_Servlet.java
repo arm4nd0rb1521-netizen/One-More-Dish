@@ -80,15 +80,20 @@ public class Crear_Platillo_Servlet extends HttpServlet {
         platillo.setDescripcion(descripcion);
         platillo.setPrecio(precio);
         platillo.setImagen(imagen);
-        
+
+       
+        boolean esAdmin = "admin".equals(request.getParameter("origen"));
+        String menu    = esAdmin ? "/HTML/menu_admin.html"             : "/HTML/menu_cocina.html";
+        String agregar = esAdmin ? "/HTML/agregar_platillo_admin.html" : "/HTML/agregar_platillo.html";
+
         boolean ok = platillo_dao.insertar(platillo);
         response.sendRedirect(request.getContextPath()
-        + (ok ? "/HTML/menu_cocina.html?creado=1" : "/HTML/agregar_platillo.html?error=1"));
-    }
+                + (ok ? menu + "?creado=1" : agregar + "?error=1"));
+    }  
 
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
 
 }

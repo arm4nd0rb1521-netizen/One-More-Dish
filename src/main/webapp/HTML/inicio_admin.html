@@ -1,13 +1,99 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Administracion | One More Dish</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="../ESTILOS/general.css"/>
-        <link rel="stylesheet" href="../ESTILOS/inicio.css"/>
-    </head>
-    <body>
-        <script src="../JS/header_admin.js"></script>
-    </body>
+<html lang="es">
+<head>
+    <title>Administración | One More Dish</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../ESTILOS/general.css"/>
+    <link rel="stylesheet" href="../ESTILOS/inicio.css"/>
+    <link rel="stylesheet" href="../ESTILOS/admin.css"/>
+</head>
+<body>
+    <main class="contenido_admin">
+
+        <section class="banner_admin">
+            <div class="banner_texto">
+                <span class="banner_etiqueta">Panel de administración</span>
+                <h1>Bienvenido, administrador</h1>
+                <p>Controla el menú, las mesas, los pedidos, el personal y todo lo que mueve a One More Dish.</p>
+            </div>
+
+            
+        </section>
+
+        <section class="panel_admin">
+            <div class="titulo">
+                <div>
+                    <h2>Módulos</h2>
+                    <p class="subtitulo_admin">¿Qué quieres administrar ahora?</p>
+                </div>
+            </div>
+            <hr>
+
+            <div class="modulos_admin">
+
+                <a href="menu_admin.html" class="modulo_admin acento_menu">
+                    <span class="modulo_icono">🍽️</span>
+                    <span class="modulo_etiqueta">Platillos</span>
+                    <span class="modulo_nombre">Menú</span>
+                    <span class="modulo_detalle">Agrega, edita o retira platillos y precios.</span>
+                    <span class="modulo_entrar">Abrir menú →</span>
+                </a>
+
+                <a href="mesas_admin.html" class="modulo_admin acento_mesas">
+                    <span class="modulo_icono">🪑</span>
+                    <span class="modulo_etiqueta">Salón</span>
+                    <span class="modulo_nombre">Mesas</span>
+                    <span class="modulo_detalle">Consulta la disponibilidad y organiza las mesas.</span>
+                    <span class="modulo_entrar">Abrir mesas →</span>
+                </a>
+
+                <a href="domicilio_admin.html" class="modulo_admin acento_domicilio">
+                    <span class="modulo_icono">🛵</span>
+                    <span class="modulo_etiqueta">Entregas</span>
+                    <span class="modulo_nombre">Pedidos a domicilio</span>
+                    <span class="modulo_detalle">Revisa y da seguimiento a los pedidos en curso.</span>
+                    <span class="modulo_entrar">Ver pedidos →</span>
+                </a>
+
+                <a href="personal_admin.html" class="modulo_admin acento_personal">
+                    <span class="modulo_icono">👥</span>
+                    <span class="modulo_etiqueta">Equipo</span>
+                    <span class="modulo_nombre">Personal</span>
+                    <span class="modulo_detalle">Administra empleados, roles y accesos.</span>
+                    <span class="modulo_entrar">Abrir personal →</span>
+                </a>
+
+                <a href="ventas_admin.html" class="modulo_admin acento_ventas">
+                    <span class="modulo_icono">💰</span>
+                    <span class="modulo_etiqueta">Finanzas</span>
+                    <span class="modulo_nombre">Ventas</span>
+                    <span class="modulo_detalle">Consulta ingresos, tickets y reportes.</span>
+                    <span class="modulo_entrar">Ver ventas →</span>
+                </a>
+
+                <a href="cocina_admin.html" class="modulo_admin acento_cocina">
+                    <span class="modulo_icono">👨‍🍳</span>
+                    <span class="modulo_etiqueta">Operación</span>
+                    <span class="modulo_nombre">Cocina</span>
+                    <span class="modulo_detalle">Supervisa los platillos en preparación e insumos.</span>
+                    <span class="modulo_entrar">Abrir cocina →</span>
+                </a>
+
+                <a href="proveedores_admin.html" class="modulo_admin acento_proveedores">
+                    <span class="modulo_icono">🚚</span>
+                    <span class="modulo_etiqueta">Abasto</span>
+                    <span class="modulo_nombre">Proveedores</span>
+                    <span class="modulo_detalle">Gestiona proveedores, contactos y compras.</span>
+                    <span class="modulo_entrar">Ver proveedores →</span>
+                </a>
+
+            </div>
+        </section>
+
+    </main>
+
+    <script src="../JS/header_admin.js"></script>
+    <script src="../JS/footer_admin.js"></script>
+</body>
 </html>
