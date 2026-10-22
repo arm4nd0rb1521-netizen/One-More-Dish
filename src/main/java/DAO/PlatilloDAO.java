@@ -13,15 +13,18 @@ public class PlatilloDAO {
         "SELECT id_platillo, nombre, descripcion, precio FROM platillo";
 
     public boolean insertar(Platillo p) {
-        String sql = "INSERT INTO platillo(nombre, descripcion, precio, imagen) VALUES(?,?,?,?)";
+        System.out.println("========== INSERTAR PLATILLO ==========");
+        
+        String sql = "INSERT INTO platillo(id_platillo, nombre, descripcion, precio, imagen) VALUES(?,?,?,?,?)";
 
         try (Connection con = base_de_datos.conectar();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setString(1, p.getNombre());
-            ps.setString(2, p.getDescripcion());
-            ps.setDouble(3, p.getPrecio());
-            ps.setBytes(4, p.getImagen());
+            ps.setInt(1, p.getId());
+            ps.setString(2, p.getNombre());
+            ps.setString(3, p.getDescripcion());
+            ps.setDouble(4, p.getPrecio());
+            ps.setBytes(5, p.getImagen());
 
             if (ps.executeUpdate() > 0) {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -32,6 +35,7 @@ public class PlatilloDAO {
             return false;
 
         } catch (SQLException e) {
+            System.out.println("========== ERROR SQL ==========");
             e.printStackTrace();
             return false;
         }

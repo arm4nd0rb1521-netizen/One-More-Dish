@@ -13,7 +13,7 @@ header.innerHTML = `
     </div>
     <div class="navegacion">
         <a href="${base}HTML/inicio_cliente.html">Home</a>
-        <a href="${base}HTML/FALTA EL MENU">Menú</a>
+        <a href="${base}HTML/menu_cliente.html">Menú</a>
         <a href="${base}HTML/pedidos_domicio.html">Pedidos a domicilio</a>
     </div>
 `;
