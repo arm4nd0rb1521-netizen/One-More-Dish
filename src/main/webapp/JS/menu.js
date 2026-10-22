@@ -3,6 +3,12 @@ const contador = document.getElementById('contador');
 const buscar = document.getElementById('buscar');
 let platillos = [];
 
+// Rol de la página: lo define <body data-origen="admin"> o "cocina"
+const ORIGEN = document.body.dataset.origen === 'admin' ? 'admin' : 'cocina';
+const PAGINA_MODIFICAR = ORIGEN === 'admin'
+    ? 'modificar_platillo_admin.html'
+    : 'modificar_platillo_cocina.html';
+
 function cerrarMenus(excepto) {
     document.querySelectorAll('.menu_flotante').forEach(m => {
         if (m !== excepto) m.hidden = true;
@@ -24,7 +30,7 @@ function tarjeta(p) {
     img.onerror = () => { foto.classList.add('sin_foto'); img.remove(); };
     foto.append(img);
 
-    // Botón ⋯ con opción Eliminar
+    // Botón ⋯ con opciones: Modificar y Eliminar
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'btn_opciones';
@@ -36,6 +42,15 @@ function tarjeta(p) {
     menu.hidden = true;
     menu.addEventListener('click', e => e.stopPropagation());
 
+    // NUEVO: opción Modificar
+    const mod = document.createElement('button');
+    mod.type = 'button';
+    mod.textContent = '✏️ Modificar platillo';
+    mod.onclick = () => {
+        location.href = PAGINA_MODIFICAR + '?id=' + encodeURIComponent(p.id);
+    };
+
+    // Opción Eliminar
     const form = document.createElement('form');
     form.method = 'post';
     form.action = '../Eliminar_Platillo_Servlet';
@@ -46,18 +61,18 @@ function tarjeta(p) {
     id.name = 'id_platillo';
     id.value = p.id;
 
-    // NUEVO: le dice al servlet desde dónde se hizo la acción
+    // Le dice al servlet desde qué rol se hizo la acción
     const origen = document.createElement('input');
     origen.type = 'hidden';
     origen.name = 'origen';
-    origen.value = 'admin';
+    origen.value = ORIGEN;
 
     const del = document.createElement('button');
     del.type = 'submit';
     del.textContent = '🗑 Eliminar platillo';
 
     form.append(id, origen, del);
-    menu.append(form);
+    menu.append(mod, form);
     btn.onclick = e => {
         e.stopPropagation();
         cerrarMenus(menu);
@@ -112,11 +127,12 @@ fetch('../Menu_Platillos_Servlet')
         lista.append(err);
     });
 
-// Avisos al volver de crear o eliminar
+// Avisos al volver de crear, modificar o eliminar
 const q = new URLSearchParams(location.search);
 const aviso = document.getElementById('aviso_menu');
 const msgs = {
     creado: ['Platillo creado correctamente.', 'ok'],
+    modificado: ['Platillo modificado correctamente.', 'ok'],
     eliminado: ['Platillo eliminado.', 'ok'],
     error: ['No se pudo completar la acción. Intenta de nuevo.', 'error']
 };

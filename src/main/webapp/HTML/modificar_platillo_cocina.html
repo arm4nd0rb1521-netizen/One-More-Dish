@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <title>Modificar platillo | One More Dish</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../ESTILOS/general.css"/>
+        <link rel="stylesheet" href="../ESTILOS/inicio.css"/>
+        <link rel="stylesheet" href="../ESTILOS/cocina.css"/>
+    </head>
+    <body>
+        <main class="panel_cocina pagina_formulario">
+            <div class="formulario">
+                <h2>Modificar platillo</h2>
+                <hr>
+
+                <p id="aviso_menu" class="aviso_menu" hidden></p>
+
+                <form id="form_modificar" action="../Modificar_Platillo_Servlet" method="post" hidden>
+
+                    <input type="hidden" name="origen" value="cocina"/>
+                    <input type="hidden" name="id_platillo" id="id_platillo"/>
+
+                    <label>Nombre del platillo</label><br>
+                    <input type="text" name="nombre_platillo" id="nombre_platillo" maxlength="25" required/><br><br>
+
+                    <label>Descripcion</label><br>
+                    <input type="text" name="desc_platillo" id="desc_platillo" maxlength="100" required/><br><br>
+
+                    <label>Precio del platillo</label><br>
+                    <input type="number" name="precio_platillo" id="precio_platillo" step="0.01" min="0" max="999.99" required/><br><br>
+
+                    <label>Imagen actual</label><br>
+                    <img id="vista_previa" class="vista_previa" alt="Imagen del platillo"/>
+
+                    <div class="acciones_form">
+                        <a href="menu_cocina.html" class="btn_cancelar">Cancelar</a>
+                        <input type="submit" value="Guardar cambios" name="guardar"/>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <script src="../JS/header_cocina.js"></script>
+        <script src="../JS/footer_cocina.js"></script>
+        <script src="../JS/modificar_platillo.js"></script>
+    </body>
+</html>
