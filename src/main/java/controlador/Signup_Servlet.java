@@ -15,8 +15,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import util.Correo_Service;
-import util.Codigo_Service;
 
 
 /**
@@ -134,19 +132,13 @@ public class Signup_Servlet extends HttpServlet {
                 return;
             }
 
-            // Generar el código y su hash
-            String codigo = Codigo_Service.generarCodigo();
-            String hash = Codigo_Service.generarHash(codigo);
-
             int id = generar_id_unico();
             String contraseñaHash = util.Password_Service.generarHash(contraseña);
             
             String sql ="INSERT INTO cliente" +
                 "(id_cliente, nombre, apellido, correo, contraseña," +
-                 "telefono, id_rol, correo_verificado," +
-                 "codigo_verificacion_hash, codigo_expira)" +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, FALSE, ?," +
-                        "DATE_ADD(NOW(), INTERVAL 10 MINUTE))";
+                 "telefono, id_rol)" +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
             try (Connection conexion = base_de_datos.conectar()) {
 
@@ -170,7 +162,6 @@ public class Signup_Servlet extends HttpServlet {
                     }
                 }
 
-                // Crear el cliente como NO verificado
                 try (PreparedStatement ps =
                         conexion.prepareStatement(sql)) {
 
@@ -181,24 +172,12 @@ public class Signup_Servlet extends HttpServlet {
                     ps.setString(5, contraseñaHash);
                     ps.setString(6, telefonoTexto);
                     ps.setInt(7, 4);
-                    ps.setString(8, hash);
 
                     ps.executeUpdate();
+                    
+                    response.sendRedirect(request.getContextPath() + "/index.html");
                 }
             }
-
-            // Enviar el código por Resend
-            Correo_Service.enviarCodigo(correo, codigo);
-
-            // Recordar qué cuenta está pendiente de verificar
-            request.getSession().setAttribute(
-                "correoPendiente", correo
-            );
-
-            // Mostrar el formulario de verificación
-            response.sendRedirect(
-                request.getContextPath() + "/HTML/verificar_correo.html"
-            );
 
         } catch (java.sql.SQLException e) {
             e.printStackTrace();

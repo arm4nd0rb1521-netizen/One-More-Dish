@@ -93,16 +93,7 @@ public class Signin_Servlet extends HttpServlet {
                 
                 if (rs.next()) {
                     String contraseña_real = rs.getString("contraseña");
-                    
-                    if (!rs.getBoolean("correo_verificado")) {
-
-                        request.getSession().setAttribute("correoPendiente", correo);
-
-                        response.sendRedirect(request.getContextPath()
-                            + "/HTML/verificar_correo.html?error=no_verificado");
-                        return;
-                    }
-                    
+                   
                     if (Password_Service.verificar(contra, contraseña_real)) {
                         response.sendRedirect(
                             request.getContextPath() + "/HTML/inicio_cliente.html?registro=exitoso"
