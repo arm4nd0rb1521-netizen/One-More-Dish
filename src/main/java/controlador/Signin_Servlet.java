@@ -59,7 +59,7 @@ public class Signin_Servlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String correo = request.getParameter("correo_login");
+        String correo = request.getParameter("correo_login").toLowerCase();
         String contra = request.getParameter("contrasena_login");
         String casilla = request.getParameter("recordarme");
         

@@ -134,7 +134,36 @@ public class EmpleadoDAO {
         e.setApellido(rs.getString("apellido"));
         e.setCorreo(rs.getString("correo"));
         e.setContraseña(rs.getString("contraseña"));
-        e.setRol(rs.getString("rol"));
+        switch (rs.getInt("id_rol")) {
+            case 1:
+                e.setRol("admin");
+                break;
+            case 2:
+                e.setRol("mesero");
+                break;
+            case 3:
+                e.setRol("cocinero");
+                break;
+        }
+        return e;
+    }
+    
+    public Empleado buscar_por_nombre(String nombre) {
+        Empleado e = new Empleado();
+        String sql = "SELECT * FROM empleado WHERE nombre = ?";
+        try(Connection conexion = base_de_datos.conectar()) {
+            PreparedStatement ps = conexion.prepareStatement(sql);
+            ResultSet rs;
+            
+            ps.setString(1, nombre);
+            rs = ps.executeQuery();
+            
+            if(rs.next())
+                e = mapear(rs);
+        } catch(SQLException ex) {
+            ex.printStackTrace();
+            System.out.println("ERROR EN LA CONEXION");
+        }
         return e;
     }
 }
