@@ -1,15 +1,244 @@
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
--->
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos a domicilio · Entregas</title>
+
+    <!-- Tipografías editoriales y limpias -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tus estilos -->
+    <link rel="stylesheet" href="../ESTILOS/general.css"/>
+    <link rel="stylesheet" href="../ESTILOS/inicio.css"/>
+    <link rel="stylesheet" href="../ESTILOS/admin.css"/>
+    <link rel="stylesheet" href="../ESTILOS/domicilio.css"/>
+</head>
+<body>
+
+    <div class="delivery-page">
+        <div class="delivery-container">
+
+            <!-- Banner Superior -->
+            <header class="delivery-banner">
+                <div class="delivery-banner-text">
+                    <span class="delivery-kicker">ENTREGAS</span>
+                    <h1 class="delivery-title">Pedidos a domicilio</h1>
+                    <p class="delivery-subtitle">Da seguimiento a cada pedido, de la cocina a la puerta.</p>
+                </div>
+
+                <div class="delivery-banner-art">
+                    <div class="delivery-arch-icon" aria-hidden="true">
+                        <span class="arch-sun"></span>
+                        <span class="arch-dot"></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Barra de Filtros -->
+            <nav class="delivery-filters" aria-label="Filtrar pedidos por estado">
+                <button type="button" class="filter-pill active" data-filter="todos">Todos</button>
+                <button type="button" class="filter-pill" data-filter="nuevo">Nuevos</button>
+                <button type="button" class="filter-pill" data-filter="preparacion">En preparación</button>
+                <button type="button" class="filter-pill" data-filter="camino">En camino</button>
+                <button type="button" class="filter-pill" data-filter="entregado">Entregados</button>
+            </nav>
+
+            <!-- Lista de Pedidos -->
+            <section class="delivery-list" id="lista-pedidos"></section>
+
+        </div>
+    </div>
+
+    <!-- Modal de detalle y cambio de estado -->
+    <div class="pedido-modal-overlay" id="pedido-modal" aria-hidden="true">
+        <div class="pedido-modal-box">
+            <button type="button" class="pedido-modal-close" id="cerrar-pedido-modal" aria-label="Cerrar">&times;</button>
+            <span class="pedido-modal-code" id="modal-codigo">Pedido #001</span>
+            <h2 class="pedido-modal-cliente" id="modal-cliente">Nombre del cliente</h2>
+            <p class="pedido-modal-fecha" id="modal-fecha">dd/mm · hh:mm</p>
+
+            <div class="pedido-modal-items" id="modal-items"></div>
+
+            <div class="pedido-modal-estado-group">
+                <label for="modal-select-estado">Actualizar estado:</label>
+                <select id="modal-select-estado">
+                    <option value="nuevo">Nuevo</option>
+                    <option value="preparacion">En preparación</option>
+                    <option value="camino">En camino</option>
+                    <option value="entregado">Entregado</option>
+                </select>
+            </div>
+
+            <div class="pedido-modal-footer">
+                <span class="pedido-modal-total" id="modal-total">$ 000</span>
+                <button type="button" class="btn-guardar-pedido" id="guardar-pedido-btn">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts del proyecto -->
+    <script src="../JS/header_admin.js"></script>
+    <script src="../JS/footer_admin.js"></script>
+
+    <!-- Lógica de filtros y detalle de pedidos -->
+    <script>
+        let pedidos = [
+            {
+                id: 1,
+                codigo: "Pedido #001",
+                cliente: "Nombre del cliente",
+                fecha: "dd/mm · hh:mm",
+                estado: "nuevo",
+                total: "$ 000",
+                platillos: ["Platillo 1", "Platillo 2"]
+            },
+            {
+                id: 2,
+                codigo: "Pedido #002",
+                cliente: "Nombre del cliente",
+                fecha: "dd/mm · hh:mm",
+                estado: "preparacion",
+                total: "$ 000",
+                platillos: ["Platillo 1", "Bebida"]
+            },
+            {
+                id: 3,
+                codigo: "Pedido #003",
+                cliente: "Nombre del cliente",
+                fecha: "dd/mm · hh:mm",
+                estado: "preparacion",
+                total: "$ 000",
+                platillos: ["Platillo principal"]
+            },
+            {
+                id: 4,
+                codigo: "Pedido #004",
+                cliente: "Nombre del cliente",
+                fecha: "dd/mm · hh:mm",
+                estado: "camino",
+                total: "$ 000",
+                platillos: ["Combo domicilio"]
+            }
+        ];
+
+        const etiquetasEstado = {
+            nuevo: "Nuevo",
+            preparacion: "En preparación",
+            camino: "En camino",
+            entregado: "Entregado"
+        };
+
+        let filtroActivo = "todos";
+        let pedidoSeleccionadoId = null;
+
+        const listaPedidosEl = document.getElementById("lista-pedidos");
+        const filterPills = document.querySelectorAll(".filter-pill");
+        const modalOverlay = document.getElementById("pedido-modal");
+        const cerrarModalBtn = document.getElementById("cerrar-pedido-modal");
+        const selectEstado = document.getElementById("modal-select-estado");
+        const guardarPedidoBtn = document.getElementById("guardar-pedido-btn");
+
+        function iconoBolsaSVG() {
+            return `
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9e2a5c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 7h12l-1 13H7L6 7z"/>
+                    <path d="M9 7V5a3 3 0 0 1 6 0v2"/>
+                </svg>
+            `;
+        }
+
+        function renderPedidos() {
+            listaPedidosEl.innerHTML = "";
+
+            const filtrados = pedidos.filter(p => filtroActivo === "todos" || p.estado === filtroActivo);
+
+            if (filtrados.length === 0) {
+                listaPedidosEl.innerHTML = `<div class="empty-pedidos">No hay pedidos en esta categoría.</div>`;
+                return;
+            }
+
+            filtrados.forEach(pedido => {
+                const card = document.createElement("article");
+                card.className = "pedido-card";
+                card.innerHTML = `
+                    <div class="pedido-left">
+                        <div class="pedido-bag-icon" aria-hidden="true">
+                            ${iconoBolsaSVG()}
+                        </div>
+                        <div class="pedido-meta">
+                            <h2 class="pedido-codigo">${pedido.codigo}</h2>
+                            <p class="pedido-subinfo">${pedido.cliente} · ${pedido.fecha}</p>
+                        </div>
+                    </div>
+
+                    <div class="pedido-right">
+                        <span class="pedido-badge badge-${pedido.estado}">
+                            <span class="badge-dot"></span>
+                            ${etiquetasEstado[pedido.estado]}
+                        </span>
+                        <span class="pedido-monto">${pedido.total}</span>
+                        <button type="button" class="btn-ver-detalle" onclick="abrirModalPedido(${pedido.id})">
+                            Ver pedido
+                        </button>
+                    </div>
+                `;
+                listaPedidosEl.appendChild(card);
+            });
+        }
+
+        filterPills.forEach(pill => {
+            pill.addEventListener("click", () => {
+                filtroActivo = pill.dataset.filter;
+                filterPills.forEach(p => p.classList.remove("active"));
+                pill.classList.add("active");
+                renderPedidos();
+            });
+        });
+
+        function abrirModalPedido(id) {
+            const pedido = pedidos.find(p => p.id === id);
+            if (!pedido) return;
+
+            pedidoSeleccionadoId = pedido.id;
+            document.getElementById("modal-codigo").textContent = pedido.codigo;
+            document.getElementById("modal-cliente").textContent = pedido.cliente;
+            document.getElementById("modal-fecha").textContent = pedido.fecha;
+            document.getElementById("modal-total").textContent = pedido.total;
+            selectEstado.value = pedido.estado;
+
+            const itemsEl = document.getElementById("modal-items");
+            itemsEl.innerHTML = pedido.platillos
+                .map(item => `<div class="modal-item-chip">${item}</div>`)
+                .join("");
+
+            modalOverlay.classList.add("open");
+            modalOverlay.setAttribute("aria-hidden", "false");
+        }
+
+        function cerrarModalPedido() {
+            modalOverlay.classList.remove("open");
+            modalOverlay.setAttribute("aria-hidden", "true");
+            pedidoSeleccionadoId = null;
+        }
+
+        guardarPedidoBtn.addEventListener("click", () => {
+            const pedido = pedidos.find(p => p.id === pedidoSeleccionadoId);
+            if (pedido) {
+                pedido.estado = selectEstado.value;
+                renderPedidos();
+            }
+            cerrarModalPedido();
+        });
+
+        cerrarModalBtn.addEventListener("click", cerrarModalPedido);
+        modalOverlay.addEventListener("click", (e) => {
+            if (e.target === modalOverlay) cerrarModalPedido();
+        });
+
+        renderPedidos();
+    </script>
+</body>
 </html>

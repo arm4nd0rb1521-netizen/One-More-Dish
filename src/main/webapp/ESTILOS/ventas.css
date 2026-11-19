@@ -1,0 +1,457 @@
+:root {
+    --bg-canvas: #faf4f0;
+    --surface-white: #ffffff;
+    --card-border: #efe3dc;
+    --berry-wine: #7d1741;
+    --berry-card-grad: linear-gradient(135deg, #a62b5d 0%, #861844 100%);
+    --bar-rosa-suave: #e7b5cb;
+    --text-primary: #3b2630;
+    --text-secondary: #7b6670;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+    background-color: var(--bg-canvas);
+}
+
+.ventas-page {
+    width: 100%;
+    min-height: calc(100vh - 140px);
+    background-color: var(--bg-canvas);
+    padding: 28px 36px 44px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text-primary);
+}
+
+.ventas-page * {
+    box-sizing: border-box;
+}
+
+.ventas-container {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+/* --- BANNER SUPERIOR --- */
+.ventas-banner {
+    width: 100%;
+    background: linear-gradient(90deg, #f9f0f4 0%, #f5e9ef 100%);
+    border: 1px solid #eedde6;
+    border-radius: 26px;
+    padding: 24px 34px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 6px 20px rgba(125, 23, 65, 0.04);
+}
+
+.ventas-kicker {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: var(--berry-wine);
+    margin-bottom: 4px;
+}
+
+.ventas-title {
+    margin: 0;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 2.35rem;
+    font-weight: 700;
+    line-height: 1.05;
+    color: var(--berry-wine);
+}
+
+.ventas-subtitle {
+    margin: 6px 0 0;
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.ventas-banner-actions {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.btn-nueva-venta {
+    background-color: #9e1b52;
+    color: var(--surface-white);
+    border: none;
+    border-radius: 999px;
+    padding: 10px 22px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.86rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(158, 27, 82, 0.22);
+    transition: transform 0.18s ease, background-color 0.18s ease;
+}
+
+.btn-nueva-venta:hover {
+    background-color: #821341;
+    transform: translateY(-1px);
+}
+
+/* Ilustración de arco */
+.ventas-arch-icon {
+    position: relative;
+    width: 66px;
+    height: 78px;
+    background-color: #cf9672;
+    border-radius: 34px 34px 8px 8px;
+    box-shadow: 4px 4px 0 rgba(213, 169, 190, 0.35);
+    flex-shrink: 0;
+}
+
+.arch-sun {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #f7e49c;
+}
+
+.arch-dot {
+    position: absolute;
+    bottom: 20px;
+    right: 12px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background-color: #d9483b;
+}
+
+/* --- 4 TARJETAS DE RESUMEN --- */
+.ventas-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    width: 100%;
+}
+
+.kpi-card {
+    background-color: var(--surface-white);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 158px;
+    box-shadow: 0 6px 20px rgba(59, 38, 48, 0.03);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(59, 38, 48, 0.06);
+}
+
+.kpi-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.kpi-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.kpi-icon-badge {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background-color: #f8ecf2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.kpi-main-amount {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--berry-wine);
+    margin: 12px 0 14px;
+}
+
+.kpi-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 0.75rem;
+}
+
+.kpi-count {
+    font-weight: 700;
+    color: #9e1b52;
+}
+
+.kpi-ticket {
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+/* Tarjeta destacada: "Hoy · en curso" */
+.kpi-card.kpi-featured {
+    background: var(--berry-card-grad);
+    border-color: transparent;
+    color: var(--surface-white);
+    box-shadow: 0 10px 24px rgba(134, 24, 68, 0.22);
+}
+
+.kpi-featured .kpi-label {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.kpi-featured .kpi-icon-badge {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+.kpi-featured .kpi-main-amount {
+    color: var(--surface-white);
+}
+
+.kpi-featured .kpi-count {
+    color: var(--surface-white);
+}
+
+.kpi-featured .kpi-ticket {
+    color: rgba(255, 255, 255, 0.82);
+}
+
+/* --- GRÁFICA INFERIOR: TOTAL DE VENTAS POR DÍA --- */
+.ventas-chart-card {
+    width: 100%;
+    background-color: var(--surface-white);
+    border: 1px solid var(--card-border);
+    border-radius: 26px;
+    padding: 24px 32px 0;
+    box-shadow: 0 8px 24px rgba(59, 38, 48, 0.03);
+    overflow: hidden;
+}
+
+.ventas-chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 22px;
+}
+
+.chart-heading {
+    margin: 0;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--berry-wine);
+}
+
+.chart-note {
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+/* Área de barras con líneas horizontales sutiles */
+.chart-area {
+    position: relative;
+    height: 250px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+    align-items: end;
+    padding: 0 12px;
+    background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 62px,
+        #f2e8ed 62px,
+        #f2e8ed 63px
+    );
+}
+
+.chart-col {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+}
+
+.chart-bar-value {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.chart-bar {
+    width: 100%;
+    max-width: 190px;
+    border-radius: 14px 14px 0 0;
+    transition: height 0.35s ease;
+}
+
+.chart-bar.bar-hoy {
+    background: linear-gradient(180deg, #b6386b 0%, #982252 100%);
+}
+
+.chart-bar.bar-anterior {
+    background-color: var(--bar-rosa-suave);
+}
+
+/* --- MODAL NUEVA VENTA --- */
+.venta-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(59, 38, 48, 0.28);
+    backdrop-filter: blur(4px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 999;
+}
+
+.venta-modal-overlay.open {
+    display: flex;
+}
+
+.venta-modal-box {
+    position: relative;
+    width: 100%;
+    max-width: 390px;
+    background: var(--surface-white);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 26px;
+    box-shadow: 0 20px 44px rgba(59, 38, 48, 0.16);
+}
+
+.venta-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: #f6ecf1;
+    color: var(--berry-wine);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.venta-modal-kicker {
+    display: inline-block;
+    background: #f6ecf1;
+    color: var(--berry-wine);
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.venta-modal-heading {
+    margin: 10px 0 4px;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.6rem;
+    color: var(--berry-wine);
+}
+
+.venta-modal-desc {
+    margin: 0 0 18px;
+    font-size: 0.86rem;
+    color: var(--text-secondary);
+}
+
+.venta-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.venta-form label {
+    font-size: 0.86rem;
+    font-weight: 600;
+}
+
+.venta-form input {
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid #d9c2cd;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.venta-modal-actions {
+    margin-top: 10px;
+}
+
+.btn-confirmar-venta {
+    width: 100%;
+    border: none;
+    border-radius: 999px;
+    padding: 11px 18px;
+    background-color: #9e1b52;
+    color: var(--surface-white);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* --- RESPONSIVO --- */
+@media (max-width: 1120px) {
+    .ventas-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .ventas-page {
+        padding: 18px 16px 32px;
+    }
+
+    .ventas-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+        border-radius: 20px;
+    }
+
+    .ventas-banner-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .ventas-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-area {
+        gap: 12px;
+        padding: 0 4px;
+    }
+}

@@ -1,0 +1,522 @@
+:root {
+    --bg-canvas: #faf4f0;
+    --surface-white: #ffffff;
+    --banner-tint: #f6ecf1;
+    --card-border: #efe3dc;
+    --berry-wine: #7d1741;
+    --berry-ring: #8e1f49;
+    --text-primary: #3b2630;
+    --text-secondary: #7b6670;
+
+    /* Colores de estado (exactos a la referencia) */
+    --libre-fill: #e8efe2;
+    --libre-stroke: #56733b;
+    --libre-dot: #5b783e;
+
+    --ocupada-fill: #f9e3ec;
+    --ocupada-stroke: #b53668;
+    --ocupada-dot: #b52d62;
+
+    --sucia-fill: #faefd7;
+    --sucia-stroke: #b5872b;
+    --sucia-dot: #ad8023;
+
+    --reservada-fill: #efe8f7;
+    --reservada-stroke: #7653a3;
+    --reservada-dot: #6f4ca0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+    background-color: var(--bg-canvas);
+}
+
+.salon-page {
+    width: 100%;
+    min-height: calc(100vh - 140px);
+    background-color: var(--bg-canvas);
+    padding: 28px 36px 40px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text-primary);
+}
+
+.salon-page * {
+    box-sizing: border-box;
+}
+
+.salon-container {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* --- BANNER SUPERIOR --- */
+.salon-banner {
+    width: 100%;
+    background: linear-gradient(90deg, #f9f0f4 0%, #f5e9ef 100%);
+    border: 1px solid #eedde6;
+    border-radius: 26px;
+    padding: 24px 34px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 6px 20px rgba(125, 23, 65, 0.04);
+}
+
+.salon-kicker {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: var(--berry-wine);
+    margin-bottom: 4px;
+}
+
+.salon-title {
+    margin: 0;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 2.35rem;
+    font-weight: 700;
+    line-height: 1.05;
+    color: var(--berry-wine);
+}
+
+.salon-subtitle {
+    margin: 6px 0 0;
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.salon-banner-actions {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.btn-config-mesas {
+    background-color: var(--surface-white);
+    color: var(--berry-wine);
+    border: 1.2px solid #d5a9be;
+    border-radius: 999px;
+    padding: 10px 22px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(125, 23, 65, 0.05);
+}
+
+.btn-config-mesas:hover {
+    background-color: var(--berry-wine);
+    color: var(--surface-white);
+    border-color: var(--berry-wine);
+}
+
+/* Ilustración minimalista de arco con círculo y punto */
+.salon-arch-icon {
+    position: relative;
+    width: 66px;
+    height: 78px;
+    background-color: #cf9672;
+    border-radius: 34px 34px 8px 8px;
+    box-shadow: 4px 4px 0 rgba(213, 169, 190, 0.35);
+    flex-shrink: 0;
+}
+
+.arch-sun {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #f7e49c;
+}
+
+.arch-dot {
+    position: absolute;
+    bottom: 20px;
+    right: 12px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background-color: #d9483b;
+}
+
+/* --- GRID PRINCIPAL --- */
+.salon-grid {
+    display: grid;
+    grid-template-columns: 1.85fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.card-panel {
+    background-color: var(--surface-white);
+    border: 1px solid var(--card-border);
+    border-radius: 26px;
+    padding: 26px 30px;
+    box-shadow: 0 8px 24px rgba(59, 38, 48, 0.03);
+}
+
+.panel-heading {
+    margin: 0;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--berry-wine);
+}
+
+/* --- MAPA DE MESAS --- */
+.map-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 18px;
+}
+
+.total-mesas-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.dotted-floor {
+    width: 100%;
+    min-height: 410px;
+    border-radius: 22px;
+    border: 1.5px dotted #e7cfd9;
+    background-color: #fffdfd;
+    background-image: radial-gradient(#ecd7e0 1.25px, transparent 1.25px);
+    background-size: 18px 18px;
+    padding: 36px 28px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+    gap: 32px 24px;
+    justify-items: center;
+    align-items: center;
+}
+
+/* Círculo de cada mesa con doble aro suave */
+.table-circle {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    border: 1.5px solid;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.75);
+}
+
+.table-circle:hover {
+    transform: translateY(-3px) scale(1.04);
+}
+
+.table-num {
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.table-state-text {
+    font-size: 0.72rem;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+/* Variantes de color por estado */
+.table-circle.state-libre {
+    background-color: var(--libre-fill);
+    border-color: var(--libre-stroke);
+    color: var(--libre-stroke);
+    box-shadow: 0 0 0 6px rgba(138, 166, 111, 0.14);
+}
+
+.table-circle.state-ocupada {
+    background-color: var(--ocupada-fill);
+    border-color: var(--ocupada-stroke);
+    color: var(--ocupada-stroke);
+    box-shadow: 0 0 0 6px rgba(201, 79, 127, 0.14);
+}
+
+.table-circle.state-sucia {
+    background-color: var(--sucia-fill);
+    border-color: var(--sucia-stroke);
+    color: var(--sucia-stroke);
+    box-shadow: 0 0 0 6px rgba(204, 158, 63, 0.15);
+}
+
+.table-circle.state-reservada {
+    background-color: var(--reservada-fill);
+    border-color: var(--reservada-stroke);
+    color: var(--reservada-stroke);
+    box-shadow: 0 0 0 6px rgba(139, 102, 189, 0.14);
+}
+
+/* --- COLUMNA DERECHA --- */
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Gráfica de dona */
+.occupied-card .panel-heading {
+    margin-bottom: 20px;
+}
+
+.donut-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 0 10px;
+}
+
+.donut-ring {
+    width: 176px;
+    height: 176px;
+    border-radius: 50%;
+    background: conic-gradient(var(--berry-ring) 0deg 90deg, #efe2e8 90deg 360deg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.35s ease;
+}
+
+.donut-hole {
+    width: 132px;
+    height: 132px;
+    border-radius: 50%;
+    background-color: var(--surface-white);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+}
+
+.donut-ratio {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--berry-wine);
+    line-height: 1;
+}
+
+.donut-percent {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Lista de Estado */
+.status-card .panel-heading {
+    margin-bottom: 16px;
+}
+
+.status-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.92rem;
+}
+
+.status-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.status-dot.libre { background-color: var(--libre-dot); }
+.status-dot.ocupada { background-color: var(--ocupada-dot); }
+.status-dot.sucia { background-color: var(--sucia-dot); }
+.status-dot.reservada { background-color: var(--reservada-dot); }
+
+.status-name {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.status-count {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* --- MODAL --- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(59, 38, 48, 0.28);
+    backdrop-filter: blur(4px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 999;
+}
+
+.modal-overlay.open {
+    display: flex;
+}
+
+.modal-box {
+    position: relative;
+    width: 100%;
+    max-width: 390px;
+    background: var(--surface-white);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 26px;
+    box-shadow: 0 20px 44px rgba(59, 38, 48, 0.16);
+}
+
+.modal-close {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: var(--banner-tint);
+    color: var(--berry-wine);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.modal-heading {
+    margin: 0 0 6px;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.6rem;
+    color: var(--berry-wine);
+}
+
+.modal-desc {
+    margin: 0 0 18px;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+}
+
+.modal-choices {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.choice-btn {
+    background: #fdf9fa;
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 10px 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.choice-btn.active {
+    border-color: var(--berry-wine);
+    background-color: var(--banner-tint);
+}
+
+.modal-actions,
+.modal-config-area {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-primary-wine {
+    width: 100%;
+    border: none;
+    border-radius: 999px;
+    padding: 11px 18px;
+    background-color: var(--berry-wine);
+    color: var(--surface-white);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-secondary-soft {
+    width: 100%;
+    border: 1px solid #d5a9be;
+    border-radius: 999px;
+    padding: 10px 18px;
+    background-color: var(--banner-tint);
+    color: var(--berry-wine);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* --- RESPONSIVO --- */
+@media (max-width: 1024px) {
+    .salon-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .salon-page {
+        padding: 18px 16px 32px;
+    }
+
+    .salon-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+        border-radius: 20px;
+    }
+
+    .salon-banner-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .dotted-floor {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 24px 14px;
+        gap: 24px 14px;
+    }
+}

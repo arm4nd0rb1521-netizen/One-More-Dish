@@ -1,15 +1,211 @@
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
--->
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventas · Resumen</title>
+
+    <!-- Tipografías editoriales y limpias -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tus estilos -->
+    <link rel="stylesheet" href="../ESTILOS/general.css"/>
+    <link rel="stylesheet" href="../ESTILOS/inicio.css"/>
+    <link rel="stylesheet" href="../ESTILOS/admin.css"/>
+    <link rel="stylesheet" href="../ESTILOS/ventas.css"/>
+</head>
+<body>
+
+    <div class="ventas-page">
+        <div class="ventas-container">
+
+            <!-- Banner Superior -->
+            <header class="ventas-banner">
+                <div class="ventas-banner-text">
+                    <span class="ventas-kicker">RESUMEN</span>
+                    <h1 class="ventas-title">Ventas</h1>
+                    <p class="ventas-subtitle">Compara el día de hoy con los días anteriores.</p>
+                </div>
+
+                <div class="ventas-banner-actions">
+                    <button type="button" class="btn-nueva-venta" id="btn-nueva-venta">
+                        + Nueva venta
+                    </button>
+                    <div class="ventas-arch-icon" aria-hidden="true">
+                        <span class="arch-sun"></span>
+                        <span class="arch-dot"></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 4 Tarjetas de Comparación -->
+            <section class="ventas-kpi-grid" id="kpi-grid"></section>
+
+            <!-- Gráfica Inferior: Total de ventas por día -->
+            <section class="ventas-chart-card">
+                <div class="ventas-chart-header">
+                    <h2 class="chart-heading">Total de ventas por día</h2>
+                    <span class="chart-note">Hoy sigue en curso</span>
+                </div>
+
+                <div class="chart-area" id="chart-area"></div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Modal para registrar una nueva venta en el día de hoy -->
+    <div class="venta-modal-overlay" id="venta-modal" aria-hidden="true">
+        <div class="venta-modal-box">
+            <button type="button" class="venta-modal-close" id="cerrar-venta-modal" aria-label="Cerrar">&times;</button>
+            <span class="venta-modal-kicker">HOY · EN CURSO</span>
+            <h3 class="venta-modal-heading">Registrar nueva venta</h3>
+            <p class="venta-modal-desc">Ingresa el monto de la venta para actualizar el resumen y la gráfica.</p>
+
+            <form id="form-nueva-venta" class="venta-form">
+                <label for="input-monto-venta">Monto de la venta ($)</label>
+                <input type="number" id="input-monto-venta" min="1" step="1" placeholder="Ej. 120" required>
+
+                <div class="venta-modal-actions">
+                    <button type="submit" class="btn-confirmar-venta">Guardar venta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts del proyecto -->
+    <script src="../JS/header_admin.js"></script>
+    <script src="../JS/footer_admin.js"></script>
+
+    <!-- Lógica dinámica de tarjetas y gráfica de barras -->
+    <script>
+        let diasVentas = [
+            {
+                etiqueta: "Hoy · en curso",
+                monto: 674,
+                ventas: 18,
+                destacada: true,
+                barraColor: "hoy"
+            },
+            {
+                etiqueta: "Ayer",
+                monto: 1795,
+                ventas: 24,
+                destacada: false,
+                barraColor: "anterior"
+            },
+            {
+                etiqueta: "Anterior",
+                monto: 1543,
+                ventas: 22,
+                destacada: false,
+                barraColor: "anterior"
+            },
+            {
+                etiqueta: "Anterior",
+                monto: 1967,
+                ventas: 24,
+                destacada: false,
+                barraColor: "anterior"
+            }
+        ];
+
+        const kpiGridEl = document.getElementById("kpi-grid");
+        const chartAreaEl = document.getElementById("chart-area");
+        const modalOverlay = document.getElementById("venta-modal");
+        const btnNuevaVenta = document.getElementById("btn-nueva-venta");
+        const cerrarModalBtn = document.getElementById("cerrar-venta-modal");
+        const formVenta = document.getElementById("form-nueva-venta");
+        const inputMonto = document.getElementById("input-monto-venta");
+
+        function iconoReciboSVG(esDestacada) {
+            const strokeColor = esDestacada ? "#ffffff" : "#9c2554";
+            return `
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="${strokeColor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/>
+                    <line x1="9" y1="8" x2="15" y2="8"/>
+                    <line x1="9" y1="12" x2="15" y2="12"/>
+                </svg>
+            `;
+        }
+
+        function renderVentas() {
+            kpiGridEl.innerHTML = "";
+            chartAreaEl.innerHTML = "";
+
+            // Renderizar 4 tarjetas
+            diasVentas.forEach(dia => {
+                const ticketProm = dia.ventas > 0 ? Math.round(dia.monto / dia.ventas) : 0;
+                const card = document.createElement("article");
+                card.className = `kpi-card ${dia.destacada ? "kpi-featured" : ""}`;
+
+                card.innerHTML = `
+                    <div class="kpi-top-row">
+                        <span class="kpi-label">${dia.etiqueta}</span>
+                        <span class="kpi-icon-badge" aria-hidden="true">
+                            ${iconoReciboSVG(dia.destacada)}
+                        </span>
+                    </div>
+
+                    <div class="kpi-main-amount">$${dia.monto}</div>
+
+                    <div class="kpi-bottom-row">
+                        <span class="kpi-count">${dia.ventas} ventas</span>
+                        <span class="kpi-ticket">Ticket prom. $${ticketProm}</span>
+                    </div>
+                `;
+                kpiGridEl.appendChild(card);
+            });
+
+            // Renderizar gráfica de barras proporcional
+            const maxMonto = Math.max(...diasVentas.map(d => d.monto), 1);
+
+            diasVentas.forEach(dia => {
+                // Altura proporcional (mínimo 18%, máximo 82% del área de barras)
+                const alturaPct = Math.max(18, Math.round((dia.monto / maxMonto) * 82));
+
+                const col = document.createElement("div");
+                col.className = "chart-col";
+                col.innerHTML = `
+                    <span class="chart-bar-value">$${dia.monto}</span>
+                    <div class="chart-bar bar-${dia.barraColor}" style="height: ${alturaPct}%;"></div>
+                `;
+                chartAreaEl.appendChild(col);
+            });
+        }
+
+        btnNuevaVenta.addEventListener("click", () => {
+            inputMonto.value = "";
+            modalOverlay.classList.add("open");
+            modalOverlay.setAttribute("aria-hidden", "false");
+            inputMonto.focus();
+        });
+
+        function cerrarModal() {
+            modalOverlay.classList.remove("open");
+            modalOverlay.setAttribute("aria-hidden", "true");
+        }
+
+        cerrarModalBtn.addEventListener("click", cerrarModal);
+        modalOverlay.addEventListener("click", (e) => {
+            if (e.target === modalOverlay) cerrarModal();
+        });
+
+        formVenta.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const montoIngresado = parseInt(inputMonto.value, 10);
+            if (!montoIngresado || montoIngresado <= 0) return;
+
+            diasVentas[0].monto += montoIngresado;
+            diasVentas[0].ventas += 1;
+
+            renderVentas();
+            cerrarModal();
+        });
+
+        renderVentas();
+    </script>
+</body>
 </html>
