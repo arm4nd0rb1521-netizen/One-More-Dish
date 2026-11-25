@@ -1026,3 +1026,14 @@ main.pagina_formulario {
     .fila_pedido .btn_principal { width: 100%; }
     .modal_caja { padding: 22px 18px; }
 }
+
+/* ===== Pedidos a domicilio en vivo (bloque 2) ===== */
+.acciones_titulo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.est_en_camino { color: #65458f; background: #e7dff3; }
+.est_entregado { color: #4c6833; background: #e3eedb; }

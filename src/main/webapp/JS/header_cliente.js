@@ -1,27 +1,33 @@
-const header = document.createElement('header');
+(function () {
+    // Ruta base: sale de donde se cargó este script (funciona en local y en Azure)
+    const base = document.currentScript.src.replace(/JS\/header_cliente\.js.*$/, '');
 
-header.className = 'main-header-inicio';
+    const header = document.createElement('header');
 
-const base = window.location.origin + '/one_more_dish/';
+    // nombre para css
+    header.className = 'main-header-inicio';
 
-header.innerHTML = `
-    <div class="principal_inicio">
-        <div class="nombre_y_logo">
-            <img src="${base}IMAGENES/logo.jpeg" alt="one_more_dish"/>
-            <h4>One More Dish</h4>
+    header.innerHTML = `
+        <div class="principal_inicio">
+            <div class="nombre_y_logo">
+                <img src="${base}IMAGENES/logo.jpeg" alt="one_more_dish"/>
+                <h4>One More Dish</h4>
+            </div>
         </div>
-    </div>
-    <div class="navegacion">
-        <a href="${base}HTML/inicio_cliente.html">Home</a>
-        <a href="${base}HTML/menu_cliente.html">Menú</a>
-        <a href="${base}HTML/pedidos_domicio.html">Pedidos a domicilio</a>
-    </div>
-`;
+        <div class="navegacion">
+            <a href="${base}HTML/inicio_cliente.html">Home</a>
+            <a href="${base}HTML/menu_cliente.html">Menú</a>
+            <a href="${base}HTML/ordenar_domicilio.html">Pedir a domicilio</a>
+            <a href="${base}HTML/pedidos_cliente.html">Mis pedidos</a>
+        </div>
+    `;
 
-header.querySelectorAll('.navegacion a').forEach(enlace => {
-    if (window.location.pathname.endsWith(enlace.getAttribute('href').split('/').pop())) {
-        enlace.classList.add('activo');
-    }
-});
+    // Marca la página actual
+    header.querySelectorAll('.navegacion a').forEach(enlace => {
+        if (window.location.pathname.endsWith(enlace.getAttribute('href').split('/').pop())) {
+            enlace.classList.add('activo');
+        }
+    });
 
-document.body.prepend(header);
+    document.body.prepend(header);
+})();

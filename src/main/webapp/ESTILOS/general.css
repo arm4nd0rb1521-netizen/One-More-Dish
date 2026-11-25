@@ -35,4 +35,39 @@ button {
     cursor: pointer;
 }
 
+/* ===== Indicador del socket ("En vivo" / "Reconectando…") ===== */
+.indicador_vivo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #8a5a00;
+    background: #fff1d0;
+}
+
+.indicador_vivo::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.indicador_vivo.conectado {
+    color: #2d6a45;
+    background: #e8f5ec;
+}
+
+.indicador_vivo.conectado::before {
+    animation: pulso_vivo 1.6s ease-in-out infinite;
+}
+
+@keyframes pulso_vivo {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: .3; }
+}
+
 

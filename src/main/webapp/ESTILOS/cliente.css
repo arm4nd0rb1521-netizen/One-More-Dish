@@ -269,3 +269,298 @@ main.panel_cliente {
         box-shadow: 8px 8px 0 var(--rosa-claro);
     }
 }
+
+
+/* ===================== PEDIDOS A DOMICILIO DEL CLIENTE (bloque 3) ===================== */
+
+/* --- Ordenar: menú a la izquierda, carrito a la derecha --- */
+.ordenar_layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 28px;
+    align-items: start;
+}
+
+.btn_agregar {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px 16px;
+}
+
+.tarjeta_platillo.en_carrito {
+    border-color: var(--rosa-principal);
+    box-shadow: 0 0 0 2px var(--rosa-claro);
+}
+
+.cantidad_platillo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding: 4px;
+    background: var(--rosa-fondo);
+    border: 1px solid var(--rosa-claro);
+    border-radius: 999px;
+}
+
+.cantidad_platillo button {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+    line-height: 1;
+    color: #fff;
+    background: var(--rosa-principal);
+    border: none;
+    border-radius: 50%;
+}
+
+.cantidad_platillo button:hover {
+    background: var(--vino);
+}
+
+.cantidad_platillo span {
+    min-width: 30px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--vino);
+}
+
+.cantidad_platillo.chica {
+    margin-top: 0;
+    padding: 2px;
+}
+
+.cantidad_platillo.chica button {
+    width: 26px;
+    height: 26px;
+    font-size: 16px;
+}
+
+.carrito {
+    position: sticky;
+    top: 20px;
+    padding: 24px 22px;
+    background: #fff;
+    border: 2px solid var(--rosa-claro);
+    border-radius: 24px;
+}
+
+.carrito h2 {
+    font-family: var(--font-titulo);
+    font-size: 24px;
+    color: var(--vino);
+    margin-bottom: 14px;
+}
+
+.carrito_lista {
+    list-style: none;
+}
+
+.carrito_lista li {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--rosa-claro);
+    font-size: 14px;
+}
+
+.carrito_nombre {
+    font-weight: 500;
+    color: var(--vino);
+}
+
+.carrito_sub {
+    min-width: 64px;
+    text-align: right;
+    font-size: 13px;
+}
+
+.carrito_vacio {
+    font-size: 14px;
+    opacity: .8;
+    padding: 10px 0;
+}
+
+.carrito_total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 16px 0 20px;
+    color: var(--vino);
+}
+
+.carrito_total strong {
+    font-family: var(--font-titulo);
+    font-size: 26px;
+}
+
+.carrito_etiqueta {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--vino);
+}
+
+.carrito_direccion {
+    width: 100%;
+    padding: 12px 14px;
+    font-family: var(--font-texto);
+    font-size: 14px;
+    color: var(--texto);
+    border: 1px solid #ecdde4;
+    border-radius: 16px;
+    resize: vertical;
+    outline: none;
+}
+
+.carrito_direccion:focus {
+    border-color: var(--rosa-principal);
+    box-shadow: 0 0 0 3px rgba(212, 103, 155, .15);
+}
+
+.carrito_ayuda {
+    display: block;
+    text-align: right;
+    font-size: 12px;
+    opacity: .7;
+    margin: 4px 0 16px;
+}
+
+.carrito_nota {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 12px;
+    opacity: .8;
+}
+
+/* --- Mis pedidos --- */
+.panel_cliente .acciones_titulo .btn_principal {
+    display: inline-block;
+}
+
+.lista_mis_pedidos {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.pedido_cliente {
+    padding: 20px 22px;
+    background: #fff;
+    border: 1px solid var(--rosa-claro);
+    border-radius: 20px;
+}
+
+.pedido_cliente.recien_creado {
+    border: 2px solid var(--rosa-principal);
+}
+
+.pedido_cliente_cab {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.pedido_cliente_cab h3 {
+    font-family: var(--font-titulo);
+    font-size: 20px;
+    color: var(--vino);
+}
+
+.pedido_cliente_meta {
+    font-size: 13px;
+    opacity: .85;
+}
+
+.pedido_cliente_total {
+    font-family: var(--font-titulo);
+    font-size: 22px;
+    color: var(--rosa-principal);
+}
+
+.pasos_pedido {
+    display: flex;
+    list-style: none;
+    margin-bottom: 12px;
+}
+
+.pasos_pedido li {
+    flex: 1;
+    position: relative;
+    padding-top: 26px;
+    text-align: center;
+    font-size: 12px;
+    opacity: .55;
+}
+
+/* Bolita */
+.pasos_pedido li::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 18px;
+    height: 18px;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid var(--rosa-claro);
+    z-index: 1;
+}
+
+/* Línea entre bolitas */
+.pasos_pedido li + li::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    right: 50%;
+    width: 100%;
+    height: 3px;
+    background: var(--rosa-claro);
+}
+
+.pasos_pedido li.hecho,
+.pasos_pedido li.actual {
+    opacity: 1;
+    color: var(--vino);
+}
+
+.pasos_pedido li.hecho::before {
+    background: var(--rosa-principal);
+    border-color: var(--rosa-principal);
+}
+
+.pasos_pedido li.hecho + li::after,
+.pasos_pedido li.actual::after {
+    background: var(--rosa-principal);
+}
+
+.pasos_pedido li.actual {
+    font-weight: 600;
+}
+
+.pasos_pedido li.actual::before {
+    border-color: var(--rosa-principal);
+    animation: pulso_vivo 1.6s ease-in-out infinite;
+}
+
+.pedido_cancelado {
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #666;
+    background: #eee;
+    border-radius: 12px;
+}
+
+@media (max-width: 900px) {
+    .ordenar_layout { grid-template-columns: 1fr; }
+    .carrito { position: static; }
+    .pasos_pedido li { font-size: 10px; }
+}

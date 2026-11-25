@@ -17,8 +17,9 @@ footerCliente.innerHTML = `
         <div class="footer_columna">
             <h5>Navegación</h5>
             <a href="${baseFooterCliente}HTML/inicio_cliente.html">Home</a>
-            <a href="${baseFooterCliente}HTML/platillos_cliente.html">Platillos</a>
-            <a href="${baseFooterCliente}HTML/pedidos_cliente.html">Pedidos a domicilio</a>
+            <a href="${baseFooterCliente}HTML/menu_cliente.html">Menú</a>
+            <a href="${baseFooterCliente}HTML/ordenar_domicilio.html">Pedir a domicilio</a>
+            <a href="${baseFooterCliente}HTML/pedidos_cliente.html">Mis pedidos</a>
         </div>
 
         <div class="footer_columna">

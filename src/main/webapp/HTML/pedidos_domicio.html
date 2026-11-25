@@ -12,7 +12,10 @@
         <main class="panel_cocina">
             <div class="titulo">
                 <h1>Pedidos a domicilio</h1>
-                <button type="button" class="btn_principal" id="btn_actualizar">↻ Actualizar</button>
+                <div class="acciones_titulo">
+                    <span id="indicador_vivo" class="indicador_vivo">Conectando…</span>
+                    <button type="button" class="btn_principal" id="btn_actualizar">↻ Actualizar</button>
+                </div>
             </div>
             <hr>
 
@@ -36,6 +39,7 @@
 
         <script src="../JS/header_cocina.js"></script>
         <script src="../JS/footer_cocina.js"></script>
+        <script src="../JS/socket_pedidos.js"></script>
         <script>
             (function () {
                 const API = '../Pedidos_Domicilio_Servlet';
@@ -44,8 +48,10 @@
                 const modal = document.getElementById('modal_pedido');
                 const caja = document.getElementById('modal_contenido');
                 const toast = document.getElementById('toast');
+                const indicador = document.getElementById('indicador_vivo');
                 let pedidos = [];
                 let filtro = 'pendiente';
+                let abiertoId = null;   // pedido que se ve en la ventana (para refrescarla si cambia)
 
                 function el(tag, clase, texto) {
                     const e = document.createElement(tag);
@@ -88,6 +94,7 @@
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
                         body: new URLSearchParams(datos)
                     });
+                    if (r.status === 401) { irALogin(); throw new Error('Inicia sesión'); }
                     const j = await r.json();
                     if (!j.ok) throw new Error(j.mensaje || 'No se pudo completar la acción');
                 }
@@ -140,9 +147,17 @@
                     }
                 }
 
+                function irALogin() {
+                    location.href = '../HTML/signin.html';
+                }
+
                 function cargar(silencioso) {
                     return fetch(API)
-                        .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+                        .then(r => {
+                            if (r.status === 401 || r.status === 403) { irALogin(); throw new Error(); }
+                            if (!r.ok) throw new Error();
+                            return r.json();
+                        })
                         .then(datos => { pedidos = datos; render(); })
                         .catch(() => {
                             if (silencioso) return;
@@ -153,6 +168,7 @@
 
                 // ----- Detalle -----
                 function cerrar() {
+                    abiertoId = null;
                     modal.hidden = true;
                     document.body.classList.remove('sin_scroll');
                 }
@@ -221,6 +237,7 @@
                         const r = await fetch(API + '?id=' + id);
                         if (!r.ok) throw new Error();
                         pintarModal(await r.json());
+                        abiertoId = id;
                         modal.hidden = false;
                         document.body.classList.add('sin_scroll');
                     } catch (e) {
@@ -230,6 +247,8 @@
 
                 async function cambiarEstado(id, clave, boton) {
                     boton.disabled = true;
+                    // Lo cambiamos nosotros: que el aviso del socket no vuelva a abrir la ventana
+                    abiertoId = null;
                     try {
                         await enviar({ id, estado: clave });
                         const p = pedidos.find(x => x.id === id);
@@ -239,6 +258,7 @@
                         avisar('Pedido #' + id + (clave === 'listo' ? ' listo' : ' en preparación'));
                     } catch (e) {
                         avisar(e.message, 'error');
+                        abiertoId = id;
                         boton.disabled = false;
                     }
                 }
@@ -249,9 +269,43 @@
                 document.getElementById('modal_fondo').onclick = cerrar;
                 document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrar(); });
 
+                // ----- Tiempo real (reemplaza el setInterval de 30 s) -----
+                function alMensaje(msg) {
+                    if (msg.tipo === 'pedido_nuevo' && msg.pedido) {
+                        if (!pedidos.some(p => p.id === msg.pedido.id)) pedidos.push(msg.pedido);
+                        render();
+                        avisar('¡Nuevo pedido #' + msg.pedido.id + ' de ' + msg.pedido.cliente + '!');
+                    }
+
+                    if (msg.tipo === 'pedido_estado') {
+                        const p = pedidos.find(x => x.id === msg.id);
+                        if (p) {
+                            p.estado = msg.estado;
+                            render();
+                        } else {
+                            cargar(true);   // no lo teníamos: pedimos la lista completa
+                        }
+                        // Si alguien más lo cambió mientras lo veíamos, actualizamos la ventana
+                        if (abiertoId === msg.id) abrir(msg.id);
+                    }
+                }
+
+                function pintarConexion(conectado) {
+                    indicador.textContent = conectado ? 'En vivo' : 'Reconectando…';
+                    indicador.classList.toggle('conectado', conectado);
+                }
+
                 cargar(false);
-                // Se refresca solo cada 30 s (sin molestar si hay un pedido abierto)
-                setInterval(() => { if (modal.hidden && !document.hidden) cargar(true); }, 30000);
+
+                Socket_Pedidos.conectar({
+                    alMensaje: alMensaje,
+                    alCambiarConexion: pintarConexion,
+                    respaldo: () => { if (modal.hidden) cargar(true); },  // plan B si se cae el socket
+                    alSinSesion: irALogin
+                });
+
+                // Solo vuelve a dibujar cada minuto para actualizar "Hace X min" (no pide nada al servidor)
+                setInterval(() => { if (modal.hidden) render(); }, 60000);
             })();
         </script>
     </body>

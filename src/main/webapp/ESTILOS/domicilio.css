@@ -467,3 +467,55 @@ body {
         border-radius: 20px;
     }
 }
+
+/* ===== Estados que faltaban y avisos en vivo (bloque 2) ===== */
+.badge-pendiente {
+    background-color: var(--badge-nuevo-bg);
+    color: var(--badge-nuevo-text);
+}
+.badge-pendiente .badge-dot { background-color: var(--badge-nuevo-dot); }
+
+.badge-listo {
+    background-color: #e8f5ec;
+    color: #2d6a45;
+}
+.badge-listo .badge-dot { background-color: #2d6a45; }
+
+.badge-cancelado {
+    background-color: #eeeeee;
+    color: #666666;
+}
+.badge-cancelado .badge-dot { background-color: #888888; }
+
+.delivery-banner .indicador_vivo {
+    margin-top: 12px;
+}
+
+.delivery-aviso {
+    margin: 0 0 18px;
+    padding: 12px 18px;
+    border-radius: 14px;
+    background: #e8f5ec;
+    color: #2d6a45;
+    font-weight: 500;
+}
+
+.delivery-aviso.error {
+    background: #fde4e4;
+    color: #9b2c2c;
+}
+
+.pedido-modal-error {
+    margin: 0 0 12px;
+    color: #9b2c2c;
+    font-size: 14px;
+}
+
+.pedido-card.recien-llegado {
+    animation: llegada_pedido 2.4s ease-out;
+}
+
+@keyframes llegada_pedido {
+    0%   { box-shadow: 0 0 0 4px var(--badge-nuevo-dot); }
+    100% { box-shadow: 0 0 0 0 transparent; }
+}

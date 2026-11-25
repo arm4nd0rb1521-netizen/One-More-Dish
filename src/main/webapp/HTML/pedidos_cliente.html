@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <title>Mis pedidos | One More Dish</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../ESTILOS/general.css"/>
+        <link rel="stylesheet" href="../ESTILOS/inicio.css"/>
+        <link rel="stylesheet" href="../ESTILOS/cocina.css"/>
+        <link rel="stylesheet" href="../ESTILOS/cliente.css"/>
+    </head>
+    <body>
+        <main class="panel_cliente">
+            <div class="titulo">
+                <div>
+                    <h1>Mis pedidos</h1>
+                    <p class="subtitulo_cliente">Sigue el estado de tus pedidos en tiempo real.</p>
+                </div>
+                <div class="acciones_titulo">
+                    <span id="indicador_vivo" class="indicador_vivo">Conectando…</span>
+                    <a href="ordenar_domicilio.html" class="btn_principal">+ Nuevo pedido</a>
+                </div>
+            </div>
+            <hr>
+
+            <p id="aviso" class="aviso_menu ok" hidden></p>
+
+            <section id="lista_mis_pedidos" class="lista_mis_pedidos">
+                <div class="vacio_menu">Cargando tus pedidos…</div>
+            </section>
+        </main>
+
+        <div id="toast" class="toast" role="status"></div>
+
+        <script src="../JS/header_cliente.js"></script>
+        <script src="../JS/footer_cliente.js"></script>
+        <script src="../JS/socket_pedidos.js"></script>
+        <script src="../JS/pedidos_cliente.js"></script>
+    </body>
+</html>

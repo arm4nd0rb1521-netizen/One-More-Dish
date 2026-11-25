@@ -1,32 +1,59 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="es">
     <head>
         <title>Ordenar a domicilio | One More Dish</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../ESTILOS/general.css"/>
         <link rel="stylesheet" href="../ESTILOS/inicio.css"/>
-        <link rel="stylesheet" href="../ESTILOS/cocina.css"/>        
+        <link rel="stylesheet" href="../ESTILOS/cocina.css"/>
+        <link rel="stylesheet" href="../ESTILOS/cliente.css"/>
     </head>
     <body>
-        <main class="panel_cocina">
+        <main class="panel_cliente">
             <div class="titulo">
                 <div>
-                    <h1>Menú de platillos</h1>
-                    <p class="subtitulo_cocina" id="contador">Cargando…</p>
+                    <h1>Pedir a domicilio</h1>
+                    <p class="subtitulo_cliente" id="contador">Cargando menú…</p>
                 </div>
             </div>
             <hr>
 
-            <input type="search" id="buscar" class="buscador" placeholder="Buscar platillo…" aria-label="Buscar platillo">
+            <div class="ordenar_layout">
 
-            <section id="lista_platillos" class="grid_platillos">
-                
-            </section>
+                <!-- Menú para elegir -->
+                <section>
+                    <input type="search" id="buscar" class="buscador" placeholder="Buscar platillo…" aria-label="Buscar platillo">
+                    <div id="lista_platillos" class="grid_platillos"></div>
+                </section>
+
+                <!-- Carrito -->
+                <aside class="carrito" aria-labelledby="titulo_carrito">
+                    <h2 id="titulo_carrito">Tu pedido</h2>
+
+                    <ul id="carrito_lista" class="carrito_lista"></ul>
+                    <p id="carrito_vacio" class="carrito_vacio">Aún no agregas platillos.</p>
+
+                    <div class="carrito_total">
+                        <span>Total</span>
+                        <strong id="carrito_total">$0.00</strong>
+                    </div>
+
+                    <label for="direccion" class="carrito_etiqueta">Dirección de entrega</label>
+                    <textarea id="direccion" class="carrito_direccion" rows="3" maxlength="200"
+                              placeholder="Calle, número, colonia y alguna referencia"></textarea>
+                    <small class="carrito_ayuda"><span id="contador_dir">0</span>/200</small>
+
+                    <button type="button" id="btn_enviar" class="btn_principal btn_grande" disabled>Enviar pedido</button>
+                    <p class="carrito_nota">Pagas al recibir tu pedido.</p>
+                </aside>
+            </div>
         </main>
+
+        <div id="toast" class="toast" role="status"></div>
+
         <script src="../JS/header_cliente.js"></script>
         <script src="../JS/footer_cliente.js"></script>
-        <script src="..//JS/menu_cliente.js"></script>
+        <script src="../JS/ordenar_domicilio.js"></script>
     </body>
 </html>

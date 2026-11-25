@@ -168,28 +168,64 @@ public class PedidoDAO {
     }
         // ===== PEDIDOS A DOMICILIO (vista de cocina) =====
 
+    // Consulta base de la lista de domicilios (la usan listarDomicilios y resumenDomicilio)
+    private static final String SQL_RESUMEN =
+        "SELECT p.id_pedido, p.estado, p.direccion, p.fecha, p.id_cliente, c.nombre, c.apellido, "
+      + "(SELECT COUNT(*) FROM pedido_platillo pp WHERE pp.id_pedido = p.id_pedido) AS articulos, "
+      + "(SELECT COALESCE(SUM(pl.precio), 0) FROM pedido_platillo pp2 "
+      + "   INNER JOIN platillo pl ON pl.id_platillo = pp2.id_platillo "
+      + "   WHERE pp2.id_pedido = p.id_pedido) AS total "
+      + "FROM pedido p LEFT JOIN cliente c ON c.id_cliente = p.id_cliente "
+      + "WHERE p.domicilio = TRUE";
+
     // Devuelve null si hubo un error de base de datos
     public ArrayList<Map<String, Object>> listarDomicilios() {
         ArrayList<Map<String, Object>> lista = new ArrayList<>();
-        String sql = "SELECT p.id_pedido, p.estado, p.direccion, p.fecha, c.nombre, c.apellido, "
-                   + "(SELECT COUNT(*) FROM pedido_platillo pp WHERE pp.id_pedido = p.id_pedido) AS articulos "
-                   + "FROM pedido p LEFT JOIN cliente c ON c.id_cliente = p.id_cliente "
-                   + "WHERE p.domicilio = TRUE ORDER BY p.fecha DESC, p.id_pedido DESC";
+        String sql = SQL_RESUMEN + " ORDER BY p.fecha DESC, p.id_pedido DESC";
 
         try (Connection con = base_de_datos.conectar();
              Statement st = con.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
 
-            while (rs.next()) {
-                Map<String, Object> m = new LinkedHashMap<>();
-                m.put("id", rs.getInt("id_pedido"));
-                m.put("estado", rs.getString("estado"));
-                m.put("direccion", rs.getString("direccion"));
-                Timestamp f = rs.getTimestamp("fecha");
-                m.put("fecha", f != null ? f.toLocalDateTime().toString() : null);
-                m.put("cliente", nombreCliente(rs.getString("nombre"), rs.getString("apellido")));
-                m.put("articulos", rs.getInt("articulos"));
-                lista.add(m);
+            while (rs.next()) lista.add(mapearResumen(rs));
+            return lista;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // Un solo pedido con el mismo formato de la lista (para avisar por el socket).
+    // Devuelve null si no existe, no es a domicilio o hubo error.
+    public Map<String, Object> resumenDomicilio(int id) {
+        String sql = SQL_RESUMEN + " AND p.id_pedido = ?";
+
+        try (Connection con = base_de_datos.conectar();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? mapearResumen(rs) : null;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // Pedidos a domicilio de UN cliente, del más nuevo al más viejo. null si hubo error.
+    public ArrayList<Map<String, Object>> listarDomiciliosDeCliente(int idCliente) {
+        ArrayList<Map<String, Object>> lista = new ArrayList<>();
+        String sql = SQL_RESUMEN + " AND p.id_cliente = ? ORDER BY p.fecha DESC, p.id_pedido DESC";
+
+        try (Connection con = base_de_datos.conectar();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idCliente);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) lista.add(mapearResumen(rs));
             }
             return lista;
 
@@ -197,6 +233,36 @@ public class PedidoDAO {
             e.printStackTrace();
             return null;
         }
+    }
+    public int idClienteDe(int idPedido) {
+        String sql = "SELECT id_cliente FROM pedido WHERE id_pedido = ?";
+
+        try (Connection con = base_de_datos.conectar();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idPedido);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt("id_cliente") : 0;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    private Map<String, Object> mapearResumen(ResultSet rs) throws SQLException {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("id", rs.getInt("id_pedido"));
+        m.put("estado", rs.getString("estado"));
+        m.put("direccion", rs.getString("direccion"));
+        Timestamp f = rs.getTimestamp("fecha");
+        m.put("fecha", f != null ? f.toLocalDateTime().toString() : null);
+        m.put("cliente", nombreCliente(rs.getString("nombre"), rs.getString("apellido")));
+        m.put("id_cliente", rs.getInt("id_cliente"));
+        m.put("articulos", rs.getInt("articulos"));
+        m.put("total", Math.round(rs.getDouble("total") * 100) / 100.0);
+        return m;
     }
 
     // Devuelve null si el pedido no existe, no es a domicilio o hubo error
@@ -355,7 +421,7 @@ public class PedidoDAO {
         p.setDomicilio(rs.getBoolean("domicilio"));
         p.setDireccion(rs.getString("direccion"));
         p.setId_cliente(rs.getInt("id_cliente")); // NULL en la BD se lee como 0
-        p.setId(rs.getInt("id_mesa"));
+        p.setId_mesa(rs.getInt("id_mesa")); // antes decía setId(...) y borraba el id del pedido
         return p;
     }
 

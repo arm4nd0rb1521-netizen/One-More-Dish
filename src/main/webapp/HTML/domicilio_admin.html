@@ -27,6 +27,7 @@
                     <span class="delivery-kicker">ENTREGAS</span>
                     <h1 class="delivery-title">Pedidos a domicilio</h1>
                     <p class="delivery-subtitle">Da seguimiento a cada pedido, de la cocina a la puerta.</p>
+                    <span id="indicador_vivo" class="indicador_vivo">Conectando…</span>
                 </div>
 
                 <div class="delivery-banner-art">
@@ -37,17 +38,24 @@
                 </div>
             </header>
 
+            <!-- Aviso (nuevo pedido, errores) -->
+            <p id="aviso" class="delivery-aviso" hidden></p>
+
             <!-- Barra de Filtros -->
             <nav class="delivery-filters" aria-label="Filtrar pedidos por estado">
                 <button type="button" class="filter-pill active" data-filter="todos">Todos</button>
-                <button type="button" class="filter-pill" data-filter="nuevo">Nuevos</button>
+                <button type="button" class="filter-pill" data-filter="pendiente">Pendientes</button>
                 <button type="button" class="filter-pill" data-filter="preparacion">En preparación</button>
+                <button type="button" class="filter-pill" data-filter="listo">Listos</button>
                 <button type="button" class="filter-pill" data-filter="camino">En camino</button>
                 <button type="button" class="filter-pill" data-filter="entregado">Entregados</button>
+                <button type="button" class="filter-pill" data-filter="cancelado">Cancelados</button>
             </nav>
 
             <!-- Lista de Pedidos -->
-            <section class="delivery-list" id="lista-pedidos"></section>
+            <section class="delivery-list" id="lista-pedidos">
+                <div class="empty-pedidos">Cargando pedidos…</div>
+            </section>
 
         </div>
     </div>
@@ -56,24 +64,29 @@
     <div class="pedido-modal-overlay" id="pedido-modal" aria-hidden="true">
         <div class="pedido-modal-box">
             <button type="button" class="pedido-modal-close" id="cerrar-pedido-modal" aria-label="Cerrar">&times;</button>
-            <span class="pedido-modal-code" id="modal-codigo">Pedido #001</span>
-            <h2 class="pedido-modal-cliente" id="modal-cliente">Nombre del cliente</h2>
-            <p class="pedido-modal-fecha" id="modal-fecha">dd/mm · hh:mm</p>
+            <span class="pedido-modal-code" id="modal-codigo">Pedido</span>
+            <h2 class="pedido-modal-cliente" id="modal-cliente"></h2>
+            <p class="pedido-modal-fecha" id="modal-fecha"></p>
+            <p class="pedido-modal-fecha" id="modal-direccion"></p>
 
             <div class="pedido-modal-items" id="modal-items"></div>
 
             <div class="pedido-modal-estado-group">
                 <label for="modal-select-estado">Actualizar estado:</label>
                 <select id="modal-select-estado">
-                    <option value="nuevo">Nuevo</option>
+                    <option value="pendiente">Pendiente</option>
                     <option value="preparacion">En preparación</option>
+                    <option value="listo">Listo</option>
                     <option value="camino">En camino</option>
                     <option value="entregado">Entregado</option>
+                    <option value="cancelado">Cancelado</option>
                 </select>
             </div>
 
+            <p class="pedido-modal-error" id="modal-error" hidden></p>
+
             <div class="pedido-modal-footer">
-                <span class="pedido-modal-total" id="modal-total">$ 000</span>
+                <span class="pedido-modal-total" id="modal-total">$ 0.00</span>
                 <button type="button" class="btn-guardar-pedido" id="guardar-pedido-btn">Guardar</button>
             </div>
         </div>
@@ -82,163 +95,251 @@
     <!-- Scripts del proyecto -->
     <script src="../JS/header_admin.js"></script>
     <script src="../JS/footer_admin.js"></script>
+    <script src="../JS/socket_pedidos.js"></script>
 
-    <!-- Lógica de filtros y detalle de pedidos -->
+    <!-- Lógica de filtros, detalle y tiempo real -->
     <script>
-        let pedidos = [
-            {
-                id: 1,
-                codigo: "Pedido #001",
-                cliente: "Nombre del cliente",
-                fecha: "dd/mm · hh:mm",
-                estado: "nuevo",
-                total: "$ 000",
-                platillos: ["Platillo 1", "Platillo 2"]
-            },
-            {
-                id: 2,
-                codigo: "Pedido #002",
-                cliente: "Nombre del cliente",
-                fecha: "dd/mm · hh:mm",
-                estado: "preparacion",
-                total: "$ 000",
-                platillos: ["Platillo 1", "Bebida"]
-            },
-            {
-                id: 3,
-                codigo: "Pedido #003",
-                cliente: "Nombre del cliente",
-                fecha: "dd/mm · hh:mm",
-                estado: "preparacion",
-                total: "$ 000",
-                platillos: ["Platillo principal"]
-            },
-            {
-                id: 4,
-                codigo: "Pedido #004",
-                cliente: "Nombre del cliente",
-                fecha: "dd/mm · hh:mm",
-                estado: "camino",
-                total: "$ 000",
-                platillos: ["Combo domicilio"]
-            }
-        ];
+        (function () {
+            const API = '../Pedidos_Domicilio_Servlet';
 
-        const etiquetasEstado = {
-            nuevo: "Nuevo",
-            preparacion: "En preparación",
-            camino: "En camino",
-            entregado: "Entregado"
-        };
+            // Texto guardado en la base  ->  clave corta para filtros y colores
+            const CLAVES = {
+                'pendiente': 'pendiente',
+                'en preparacion': 'preparacion',
+                'listo': 'listo',
+                'en camino': 'camino',
+                'entregado': 'entregado',
+                'cancelado': 'cancelado'
+            };
 
-        let filtroActivo = "todos";
-        let pedidoSeleccionadoId = null;
+            let pedidos = [];
+            let filtroActivo = 'todos';
+            let pedidoSeleccionadoId = null;
 
-        const listaPedidosEl = document.getElementById("lista-pedidos");
-        const filterPills = document.querySelectorAll(".filter-pill");
-        const modalOverlay = document.getElementById("pedido-modal");
-        const cerrarModalBtn = document.getElementById("cerrar-pedido-modal");
-        const selectEstado = document.getElementById("modal-select-estado");
-        const guardarPedidoBtn = document.getElementById("guardar-pedido-btn");
+            const listaPedidosEl = document.getElementById('lista-pedidos');
+            const filterPills = document.querySelectorAll('.filter-pill');
+            const modalOverlay = document.getElementById('pedido-modal');
+            const cerrarModalBtn = document.getElementById('cerrar-pedido-modal');
+            const selectEstado = document.getElementById('modal-select-estado');
+            const guardarPedidoBtn = document.getElementById('guardar-pedido-btn');
+            const modalError = document.getElementById('modal-error');
+            const aviso = document.getElementById('aviso');
+            const indicador = document.getElementById('indicador_vivo');
 
-        function iconoBolsaSVG() {
-            return `
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9e2a5c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 7h12l-1 13H7L6 7z"/>
-                    <path d="M9 7V5a3 3 0 0 1 6 0v2"/>
-                </svg>
-            `;
-        }
-
-        function renderPedidos() {
-            listaPedidosEl.innerHTML = "";
-
-            const filtrados = pedidos.filter(p => filtroActivo === "todos" || p.estado === filtroActivo);
-
-            if (filtrados.length === 0) {
-                listaPedidosEl.innerHTML = `<div class="empty-pedidos">No hay pedidos en esta categoría.</div>`;
-                return;
+            // ----- Ayudas -----
+            function el(tag, clase, texto) {
+                const e = document.createElement(tag);
+                if (clase) e.className = clase;
+                if (texto !== undefined) e.textContent = texto;   // textContent: nunca inyecta HTML
+                return e;
             }
 
-            filtrados.forEach(pedido => {
-                const card = document.createElement("article");
-                card.className = "pedido-card";
-                card.innerHTML = `
-                    <div class="pedido-left">
-                        <div class="pedido-bag-icon" aria-hidden="true">
-                            ${iconoBolsaSVG()}
-                        </div>
-                        <div class="pedido-meta">
-                            <h2 class="pedido-codigo">${pedido.codigo}</h2>
-                            <p class="pedido-subinfo">${pedido.cliente} · ${pedido.fecha}</p>
-                        </div>
-                    </div>
+            const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+            const clave = estado => CLAVES[norm(estado)] || 'pendiente';
+            const dinero = n => '$ ' + Number(n || 0).toFixed(2);
 
-                    <div class="pedido-right">
-                        <span class="pedido-badge badge-${pedido.estado}">
-                            <span class="badge-dot"></span>
-                            ${etiquetasEstado[pedido.estado]}
-                        </span>
-                        <span class="pedido-monto">${pedido.total}</span>
-                        <button type="button" class="btn-ver-detalle" onclick="abrirModalPedido(${pedido.id})">
-                            Ver pedido
-                        </button>
-                    </div>
-                `;
-                listaPedidosEl.appendChild(card);
+            function fechaCorta(iso) {
+                if (!iso) return 'Sin fecha';
+                return new Date(iso).toLocaleString('es-MX',
+                    { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+            }
+
+            function mostrarAviso(texto, error) {
+                aviso.textContent = texto;
+                aviso.classList.toggle('error', !!error);
+                aviso.hidden = false;
+                clearTimeout(mostrarAviso.t);
+                mostrarAviso.t = setTimeout(() => { aviso.hidden = true; }, 4000);
+            }
+
+            function irALogin() {
+                location.href = '../HTML/signin.html';
+            }
+
+            function iconoBolsa() {
+                const ns = 'http://www.w3.org/2000/svg';
+                const svg = document.createElementNS(ns, 'svg');
+                svg.setAttribute('viewBox', '0 0 24 24');
+                svg.setAttribute('width', '18');
+                svg.setAttribute('height', '18');
+                svg.setAttribute('fill', 'none');
+                svg.setAttribute('stroke', '#9e2a5c');
+                svg.setAttribute('stroke-width', '1.8');
+                svg.setAttribute('stroke-linecap', 'round');
+                svg.setAttribute('stroke-linejoin', 'round');
+                ['M6 7h12l-1 13H7L6 7z', 'M9 7V5a3 3 0 0 1 6 0v2'].forEach(d => {
+                    const path = document.createElementNS(ns, 'path');
+                    path.setAttribute('d', d);
+                    svg.append(path);
+                });
+                return svg;
+            }
+
+            // ----- Lista -----
+            function tarjeta(pedido, nuevo) {
+                const card = el('article', 'pedido-card' + (nuevo ? ' recien-llegado' : ''));
+
+                const izq = el('div', 'pedido-left');
+                const icono = el('div', 'pedido-bag-icon');
+                icono.setAttribute('aria-hidden', 'true');
+                icono.append(iconoBolsa());
+                const meta = el('div', 'pedido-meta');
+                meta.append(
+                    el('h2', 'pedido-codigo', 'Pedido #' + pedido.id),
+                    el('p', 'pedido-subinfo', pedido.cliente + ' · ' + fechaCorta(pedido.fecha))
+                );
+                izq.append(icono, meta);
+
+                const der = el('div', 'pedido-right');
+                const badge = el('span', 'pedido-badge badge-' + clave(pedido.estado));
+                badge.append(el('span', 'badge-dot'), document.createTextNode(' ' + (pedido.estado || 'Pendiente')));
+                const ver = el('button', 'btn-ver-detalle', 'Ver pedido');
+                ver.type = 'button';
+                ver.addEventListener('click', () => abrirModalPedido(pedido.id));
+                der.append(badge, el('span', 'pedido-monto', dinero(pedido.total)), ver);
+
+                card.append(izq, der);
+                return card;
+            }
+
+            function renderPedidos(idNuevo) {
+                const filtrados = pedidos.filter(p => filtroActivo === 'todos' || clave(p.estado) === filtroActivo);
+
+                if (filtrados.length === 0) {
+                    listaPedidosEl.replaceChildren(el('div', 'empty-pedidos', 'No hay pedidos en esta categoría.'));
+                    return;
+                }
+                listaPedidosEl.replaceChildren(...filtrados.map(p => tarjeta(p, p.id === idNuevo)));
+            }
+
+            function cargar() {
+                return fetch(API)
+                    .then(r => {
+                        if (r.status === 401 || r.status === 403) { irALogin(); throw new Error(); }
+                        if (!r.ok) throw new Error();
+                        return r.json();
+                    })
+                    .then(datos => { pedidos = datos; renderPedidos(); })
+                    .catch(() => {
+                        listaPedidosEl.replaceChildren(el('div', 'empty-pedidos',
+                            'No se pudieron cargar los pedidos. Revisa el servidor y la base de datos.'));
+                    });
+            }
+
+            filterPills.forEach(pill => {
+                pill.addEventListener('click', () => {
+                    filtroActivo = pill.dataset.filter;
+                    filterPills.forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    renderPedidos();
+                });
             });
-        }
 
-        filterPills.forEach(pill => {
-            pill.addEventListener("click", () => {
-                filtroActivo = pill.dataset.filter;
-                filterPills.forEach(p => p.classList.remove("active"));
-                pill.classList.add("active");
-                renderPedidos();
-            });
-        });
+            // ----- Modal -----
+            async function abrirModalPedido(id) {
+                try {
+                    const r = await fetch(API + '?id=' + id);
+                    if (r.status === 401 || r.status === 403) { irALogin(); return; }
+                    if (!r.ok) throw new Error();
+                    const d = await r.json();
 
-        function abrirModalPedido(id) {
-            const pedido = pedidos.find(p => p.id === id);
-            if (!pedido) return;
+                    pedidoSeleccionadoId = d.id;
+                    document.getElementById('modal-codigo').textContent = 'Pedido #' + d.id;
+                    document.getElementById('modal-cliente').textContent = d.cliente;
+                    document.getElementById('modal-fecha').textContent =
+                        fechaCorta(d.fecha) + ' · ' + (d.telefono || 'Sin teléfono');
+                    document.getElementById('modal-direccion').textContent = d.direccion || 'Sin dirección';
+                    document.getElementById('modal-total').textContent = dinero(d.total);
+                    selectEstado.value = clave(d.estado);
+                    modalError.hidden = true;
+                    guardarPedidoBtn.disabled = false;
 
-            pedidoSeleccionadoId = pedido.id;
-            document.getElementById("modal-codigo").textContent = pedido.codigo;
-            document.getElementById("modal-cliente").textContent = pedido.cliente;
-            document.getElementById("modal-fecha").textContent = pedido.fecha;
-            document.getElementById("modal-total").textContent = pedido.total;
-            selectEstado.value = pedido.estado;
+                    const items = d.platillos.length
+                        ? d.platillos.map(p => el('div', 'modal-item-chip', p.cantidad + '× ' + p.nombre))
+                        : [el('div', 'modal-item-chip', 'Sin platillos')];
+                    document.getElementById('modal-items').replaceChildren(...items);
 
-            const itemsEl = document.getElementById("modal-items");
-            itemsEl.innerHTML = pedido.platillos
-                .map(item => `<div class="modal-item-chip">${item}</div>`)
-                .join("");
-
-            modalOverlay.classList.add("open");
-            modalOverlay.setAttribute("aria-hidden", "false");
-        }
-
-        function cerrarModalPedido() {
-            modalOverlay.classList.remove("open");
-            modalOverlay.setAttribute("aria-hidden", "true");
-            pedidoSeleccionadoId = null;
-        }
-
-        guardarPedidoBtn.addEventListener("click", () => {
-            const pedido = pedidos.find(p => p.id === pedidoSeleccionadoId);
-            if (pedido) {
-                pedido.estado = selectEstado.value;
-                renderPedidos();
+                    modalOverlay.classList.add('open');
+                    modalOverlay.setAttribute('aria-hidden', 'false');
+                } catch (e) {
+                    mostrarAviso('No se pudo abrir el pedido.', true);
+                }
             }
-            cerrarModalPedido();
-        });
 
-        cerrarModalBtn.addEventListener("click", cerrarModalPedido);
-        modalOverlay.addEventListener("click", (e) => {
-            if (e.target === modalOverlay) cerrarModalPedido();
-        });
+            function cerrarModalPedido() {
+                modalOverlay.classList.remove('open');
+                modalOverlay.setAttribute('aria-hidden', 'true');
+                pedidoSeleccionadoId = null;
+            }
 
-        renderPedidos();
+            guardarPedidoBtn.addEventListener('click', async () => {
+                if (pedidoSeleccionadoId === null) return;
+                guardarPedidoBtn.disabled = true;
+                modalError.hidden = true;
+
+                try {
+                    const r = await fetch(API, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                        body: new URLSearchParams({ id: pedidoSeleccionadoId, estado: selectEstado.value })
+                    });
+                    if (r.status === 401) { irALogin(); return; }
+                    const j = await r.json();
+                    if (!j.ok) throw new Error(j.mensaje || 'No se pudo guardar');
+
+                    const p = pedidos.find(x => x.id === pedidoSeleccionadoId);
+                    if (p) p.estado = j.estado;
+                    mostrarAviso('Pedido #' + pedidoSeleccionadoId + ': ' + j.estado);
+                    cerrarModalPedido();
+                    renderPedidos();
+                } catch (e) {
+                    modalError.textContent = e.message;
+                    modalError.hidden = false;
+                    guardarPedidoBtn.disabled = false;
+                }
+            });
+
+            cerrarModalBtn.addEventListener('click', cerrarModalPedido);
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) cerrarModalPedido();
+            });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModalPedido(); });
+
+            // ----- Tiempo real -----
+            function alMensaje(msg) {
+                if (msg.tipo === 'pedido_nuevo' && msg.pedido) {
+                    if (!pedidos.some(p => p.id === msg.pedido.id)) pedidos.unshift(msg.pedido);
+                    renderPedidos(msg.pedido.id);
+                    mostrarAviso('Nuevo pedido #' + msg.pedido.id + ' de ' + msg.pedido.cliente);
+                }
+
+                if (msg.tipo === 'pedido_estado') {
+                    const p = pedidos.find(x => x.id === msg.id);
+                    if (p) {
+                        p.estado = msg.estado;
+                        renderPedidos();
+                    } else {
+                        cargar();
+                    }
+                    // Si lo tenemos abierto, movemos el select al estado nuevo
+                    if (pedidoSeleccionadoId === msg.id) selectEstado.value = clave(msg.estado);
+                }
+            }
+
+            function pintarConexion(conectado) {
+                indicador.textContent = conectado ? 'En vivo' : 'Reconectando…';
+                indicador.classList.toggle('conectado', conectado);
+            }
+
+            cargar();
+
+            Socket_Pedidos.conectar({
+                alMensaje: alMensaje,
+                alCambiarConexion: pintarConexion,
+                respaldo: () => { if (pedidoSeleccionadoId === null) cargar(); },
+                alSinSesion: irALogin
+            });
+        })();
     </script>
 </body>
 </html>
