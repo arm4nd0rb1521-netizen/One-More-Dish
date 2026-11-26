@@ -2,6 +2,32 @@
     // Ruta base: sale de donde se cargó este script (no depende del nombre del proyecto)
     const base = document.currentScript.src.replace(/JS\/header_admin\.js.*$/, '');
 
+    // Oculta la página hasta confirmar que hay sesión
+    document.documentElement.style.visibility = 'hidden';
+
+    function verificarSesion() {
+        fetch(base + 'Sesion_Servlet', { cache: 'no-store', credentials: 'same-origin' })
+            .then(function (r) {
+                if (r.ok) {
+                    document.documentElement.style.visibility = 'visible';
+                } else {
+                    window.location.replace(base);
+                }
+            })
+            .catch(function () {
+                window.location.replace(base);
+            });
+    }
+
+    verificarSesion();
+
+    // Al volver con la flecha, la página puede restaurarse desde la caché: se verifica de nuevo
+    window.addEventListener('pageshow', function (e) {
+        if (e.persisted) {
+            verificarSesion();
+        }
+    });
+
     const header = document.createElement('header');
 
     // nombre para css
@@ -23,6 +49,7 @@
             <a href="${base}HTML/ventas_admin.html">Ventas</a>
             <a href="${base}HTML/cocina_admin.html">Cocina</a>
             <a href="${base}HTML/proveedores_admin.html">Proveedores</a>
+            <a href="${base}Logout_Servlet" class="btn-cerrar-sesion">Cerrar sesión</a>
         </div>
     `;
 

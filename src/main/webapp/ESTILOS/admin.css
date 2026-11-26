@@ -254,3 +254,8 @@ main.panel_admin {
     .resumen_admin { grid-template-columns: 1fr 1fr; }
     .modulo_admin { flex: 1 1 100%; }
 }
+
+
+.btn-cerrar-sesion {
+    margin-left: auto;
+}
