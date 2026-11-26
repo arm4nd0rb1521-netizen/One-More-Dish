@@ -1,6 +1,7 @@
 package controlador;
 
 import DAO.PedidoDAO;
+import DAO.VentaDAO;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -117,6 +118,12 @@ public class Pedidos_Domicilio_Servlet extends HttpServlet {
             if (ok) {
                 // Aviso en tiempo real a admin, cocina y al cliente dueño del pedido
                 Pedidos_Socket.notificarEstadoPedido(id, nuevo, dao.idClienteDe(id));
+
+                // Entregado = cobrado: se registra la venta (si aún no existe)
+                if ("entregado".equals(clave)
+                        && new VentaDAO().registrarCobro(id, Sesion_Util.idUsuario(request)) == null) {
+                    Ventas_Servlet.avisarVentaNueva();
+                }
             }
             responder(response, ok, ok ? "" : "No se pudo actualizar el pedido", ok ? nuevo : null);
 

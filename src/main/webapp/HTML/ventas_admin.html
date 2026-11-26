@@ -27,11 +27,12 @@
                     <span class="ventas-kicker">RESUMEN</span>
                     <h1 class="ventas-title">Ventas</h1>
                     <p class="ventas-subtitle">Compara el día de hoy con los días anteriores.</p>
+                    <span id="indicador_vivo" class="indicador_vivo">Conectando…</span>
                 </div>
 
                 <div class="ventas-banner-actions">
                     <button type="button" class="btn-nueva-venta" id="btn-nueva-venta">
-                        + Nueva venta
+                        + Cobrar pedido
                     </button>
                     <div class="ventas-arch-icon" aria-hidden="true">
                         <span class="arch-sun"></span>
@@ -61,151 +62,244 @@
         <div class="venta-modal-box">
             <button type="button" class="venta-modal-close" id="cerrar-venta-modal" aria-label="Cerrar">&times;</button>
             <span class="venta-modal-kicker">HOY · EN CURSO</span>
-            <h3 class="venta-modal-heading">Registrar nueva venta</h3>
-            <p class="venta-modal-desc">Ingresa el monto de la venta para actualizar el resumen y la gráfica.</p>
+            <h3 class="venta-modal-heading">Cobrar un pedido</h3>
+            <p class="venta-modal-desc">Elige el pedido que se está pagando. El total se calcula con los platillos del pedido.</p>
 
             <form id="form-nueva-venta" class="venta-form">
-                <label for="input-monto-venta">Monto de la venta ($)</label>
-                <input type="number" id="input-monto-venta" min="1" step="1" placeholder="Ej. 120" required>
+                <label for="select-pedido">Pedido</label>
+                <select id="select-pedido" required>
+                    <option value="">Cargando pedidos…</option>
+                </select>
+
+                <p class="venta-total-elegido" id="total-elegido"></p>
+                <p class="venta-error" id="venta-error" hidden></p>
 
                 <div class="venta-modal-actions">
-                    <button type="submit" class="btn-confirmar-venta">Guardar venta</button>
+                    <button type="submit" class="btn-confirmar-venta" id="btn-confirmar-venta">Registrar venta</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Scripts del proyecto -->
-    <script src="../JS/header_admin.js"></script>
-    <script src="../JS/footer_admin.js"></script>
-
-    <!-- Lógica dinámica de tarjetas y gráfica de barras -->
+       <!-- Lógica dinámica de tarjetas y gráfica (datos reales de Ventas_Servlet + socket) -->
     <script>
-        let diasVentas = [
-            {
-                etiqueta: "Hoy · en curso",
-                monto: 674,
-                ventas: 18,
-                destacada: true,
-                barraColor: "hoy"
-            },
-            {
-                etiqueta: "Ayer",
-                monto: 1795,
-                ventas: 24,
-                destacada: false,
-                barraColor: "anterior"
-            },
-            {
-                etiqueta: "Anterior",
-                monto: 1543,
-                ventas: 22,
-                destacada: false,
-                barraColor: "anterior"
-            },
-            {
-                etiqueta: "Anterior",
-                monto: 1967,
-                ventas: 24,
-                destacada: false,
-                barraColor: "anterior"
+        (function () {
+            const API = "../Ventas_Servlet";
+
+            let diasVentas = [];     // [{fecha, ventas, monto}] de hoy hacia atrás
+            let porCobrar = [];      // pedidos sin venta
+
+            const kpiGridEl = document.getElementById("kpi-grid");
+            const chartAreaEl = document.getElementById("chart-area");
+            const modalOverlay = document.getElementById("venta-modal");
+            const btnNuevaVenta = document.getElementById("btn-nueva-venta");
+            const cerrarModalBtn = document.getElementById("cerrar-venta-modal");
+            const formVenta = document.getElementById("form-nueva-venta");
+            const selectPedido = document.getElementById("select-pedido");
+            const totalElegido = document.getElementById("total-elegido");
+            const ventaError = document.getElementById("venta-error");
+            const btnConfirmar = document.getElementById("btn-confirmar-venta");
+            const indicador = document.getElementById("indicador_vivo");
+
+            const dinero = n => "$" + Number(n || 0).toLocaleString("es-MX",
+                { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+            function irALogin() {
+                location.href = "../HTML/signin.html";
             }
-        ];
 
-        const kpiGridEl = document.getElementById("kpi-grid");
-        const chartAreaEl = document.getElementById("chart-area");
-        const modalOverlay = document.getElementById("venta-modal");
-        const btnNuevaVenta = document.getElementById("btn-nueva-venta");
-        const cerrarModalBtn = document.getElementById("cerrar-venta-modal");
-        const formVenta = document.getElementById("form-nueva-venta");
-        const inputMonto = document.getElementById("input-monto-venta");
+            // "2026-11-25" -> "Hoy · en curso", "Ayer", "Lun 23 nov"
+            function etiquetaDia(fecha, i) {
+                if (i === 0) return "Hoy · en curso";
+                if (i === 1) return "Ayer";
+                const [a, m, d] = fecha.split("-").map(Number);
+                return new Date(a, m - 1, d).toLocaleDateString("es-MX",
+                    { weekday: "short", day: "numeric", month: "short" });
+            }
 
-        function iconoReciboSVG(esDestacada) {
-            const strokeColor = esDestacada ? "#ffffff" : "#9c2554";
-            return `
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="${strokeColor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/>
-                    <line x1="9" y1="8" x2="15" y2="8"/>
-                    <line x1="9" y1="12" x2="15" y2="12"/>
-                </svg>
-            `;
-        }
+            function iconoRecibo(esDestacada) {
+                const ns = "http://www.w3.org/2000/svg";
+                const svg = document.createElementNS(ns, "svg");
+                svg.setAttribute("viewBox", "0 0 24 24");
+                svg.setAttribute("width", "16");
+                svg.setAttribute("height", "16");
+                svg.setAttribute("fill", "none");
+                svg.setAttribute("stroke", esDestacada ? "#ffffff" : "#9c2554");
+                svg.setAttribute("stroke-width", "1.8");
+                svg.setAttribute("stroke-linecap", "round");
+                svg.setAttribute("stroke-linejoin", "round");
+                const path = document.createElementNS(ns, "path");
+                path.setAttribute("d", "M6 3h12v18l-3-2-3 2-3-2-3 2V3z");
+                svg.append(path);
+                [[8], [12]].forEach(([y]) => {
+                    const l = document.createElementNS(ns, "line");
+                    l.setAttribute("x1", "9"); l.setAttribute("x2", "15");
+                    l.setAttribute("y1", y); l.setAttribute("y2", y);
+                    svg.append(l);
+                });
+                return svg;
+            }
 
-        function renderVentas() {
-            kpiGridEl.innerHTML = "";
-            chartAreaEl.innerHTML = "";
+            function el(tag, clase, texto) {
+                const e = document.createElement(tag);
+                if (clase) e.className = clase;
+                if (texto !== undefined) e.textContent = texto;
+                return e;
+            }
 
-            // Renderizar 4 tarjetas
-            diasVentas.forEach(dia => {
-                const ticketProm = dia.ventas > 0 ? Math.round(dia.monto / dia.ventas) : 0;
-                const card = document.createElement("article");
-                card.className = `kpi-card ${dia.destacada ? "kpi-featured" : ""}`;
+            // ----- Dibujar -----
+            function renderVentas() {
+                kpiGridEl.replaceChildren();
+                chartAreaEl.replaceChildren();
 
-                card.innerHTML = `
-                    <div class="kpi-top-row">
-                        <span class="kpi-label">${dia.etiqueta}</span>
-                        <span class="kpi-icon-badge" aria-hidden="true">
-                            ${iconoReciboSVG(dia.destacada)}
-                        </span>
-                    </div>
+                diasVentas.forEach((dia, i) => {
+                    const destacada = i === 0;
+                    const ticketProm = dia.ventas > 0 ? dia.monto / dia.ventas : 0;
 
-                    <div class="kpi-main-amount">$${dia.monto}</div>
+                    const card = el("article", "kpi-card" + (destacada ? " kpi-featured" : ""));
 
-                    <div class="kpi-bottom-row">
-                        <span class="kpi-count">${dia.ventas} ventas</span>
-                        <span class="kpi-ticket">Ticket prom. $${ticketProm}</span>
-                    </div>
-                `;
-                kpiGridEl.appendChild(card);
+                    const arriba = el("div", "kpi-top-row");
+                    const badge = el("span", "kpi-icon-badge");
+                    badge.setAttribute("aria-hidden", "true");
+                    badge.append(iconoRecibo(destacada));
+                    arriba.append(el("span", "kpi-label", etiquetaDia(dia.fecha, i)), badge);
+
+                    const abajo = el("div", "kpi-bottom-row");
+                    abajo.append(
+                        el("span", "kpi-count", dia.ventas + (dia.ventas === 1 ? " venta" : " ventas")),
+                        el("span", "kpi-ticket", "Ticket prom. " + dinero(Math.round(ticketProm)))
+                    );
+
+                    card.append(arriba, el("div", "kpi-main-amount", dinero(dia.monto)), abajo);
+                    kpiGridEl.append(card);
+                });
+
+                // Gráfica: del día más viejo (izquierda) a hoy (derecha)
+                const maxMonto = Math.max(...diasVentas.map(d => d.monto), 1);
+                diasVentas.slice().reverse().forEach(dia => {
+                    const esHoy = dia === diasVentas[0];
+                    const alturaPct = dia.monto > 0 ? Math.max(18, Math.round((dia.monto / maxMonto) * 82)) : 4;
+
+                    const col = el("div", "chart-col");
+                    const barra = el("div", "chart-bar bar-" + (esHoy ? "hoy" : "anterior"));
+                    barra.style.height = alturaPct + "%";
+                    col.append(el("span", "chart-bar-value", dinero(dia.monto)), barra);
+                    chartAreaEl.append(col);
+                });
+            }
+
+            function cargar() {
+                return fetch(API)
+                    .then(r => {
+                        if (r.status === 401 || r.status === 403) { irALogin(); throw new Error(); }
+                        if (!r.ok) throw new Error();
+                        return r.json();
+                    })
+                    .then(datos => { diasVentas = datos; renderVentas(); })
+                    .catch(() => {
+                        kpiGridEl.replaceChildren(el("p", "venta-error",
+                            "No se pudieron cargar las ventas. Revisa el servidor y la base de datos."));
+                    });
+            }
+
+            // ----- Modal: cobrar un pedido -----
+            function mostrarError(texto) {
+                ventaError.textContent = texto;
+                ventaError.hidden = !texto;
+            }
+
+            function pintarTotal() {
+                const p = porCobrar.find(x => String(x.id) === selectPedido.value);
+                totalElegido.textContent = p ? "Total a cobrar: " + dinero(p.total) : "";
+            }
+
+            async function cargarPorCobrar() {
+                selectPedido.replaceChildren(new Option("Cargando pedidos…", ""));
+                try {
+                    const r = await fetch(API + "?por_cobrar=1");
+                    if (!r.ok) throw new Error();
+                    porCobrar = await r.json();
+
+                    if (porCobrar.length === 0) {
+                        selectPedido.replaceChildren(new Option("No hay pedidos pendientes de cobro", ""));
+                    } else {
+                        selectPedido.replaceChildren(
+                            new Option("Elige un pedido…", ""),
+                            ...porCobrar.map(p => new Option(
+                                "#" + p.id + " · " + p.descripcion + " · " + dinero(p.total)
+                                    + (p.estado ? " · " + p.estado : ""),
+                                p.id))
+                        );
+                    }
+                } catch (e) {
+                    selectPedido.replaceChildren(new Option("No se pudieron cargar los pedidos", ""));
+                }
+                pintarTotal();
+            }
+
+            btnNuevaVenta.addEventListener("click", () => {
+                mostrarError("");
+                btnConfirmar.disabled = false;
+                modalOverlay.classList.add("open");
+                modalOverlay.setAttribute("aria-hidden", "false");
+                cargarPorCobrar().then(() => selectPedido.focus());
             });
 
-            // Renderizar gráfica de barras proporcional
-            const maxMonto = Math.max(...diasVentas.map(d => d.monto), 1);
+            selectPedido.addEventListener("change", pintarTotal);
 
-            diasVentas.forEach(dia => {
-                // Altura proporcional (mínimo 18%, máximo 82% del área de barras)
-                const alturaPct = Math.max(18, Math.round((dia.monto / maxMonto) * 82));
+            function cerrarModal() {
+                modalOverlay.classList.remove("open");
+                modalOverlay.setAttribute("aria-hidden", "true");
+            }
 
-                const col = document.createElement("div");
-                col.className = "chart-col";
-                col.innerHTML = `
-                    <span class="chart-bar-value">$${dia.monto}</span>
-                    <div class="chart-bar bar-${dia.barraColor}" style="height: ${alturaPct}%;"></div>
-                `;
-                chartAreaEl.appendChild(col);
+            cerrarModalBtn.addEventListener("click", cerrarModal);
+            modalOverlay.addEventListener("click", (e) => {
+                if (e.target === modalOverlay) cerrarModal();
             });
-        }
+            document.addEventListener("keydown", e => { if (e.key === "Escape") cerrarModal(); });
 
-        btnNuevaVenta.addEventListener("click", () => {
-            inputMonto.value = "";
-            modalOverlay.classList.add("open");
-            modalOverlay.setAttribute("aria-hidden", "false");
-            inputMonto.focus();
-        });
+            formVenta.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                if (!selectPedido.value) {
+                    mostrarError("Elige un pedido.");
+                    return;
+                }
+                btnConfirmar.disabled = true;
+                mostrarError("");
 
-        function cerrarModal() {
-            modalOverlay.classList.remove("open");
-            modalOverlay.setAttribute("aria-hidden", "true");
-        }
+                try {
+                    const r = await fetch(API, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+                        body: new URLSearchParams({ id_pedido: selectPedido.value })
+                    });
+                    if (r.status === 401) { irALogin(); return; }
+                    const j = await r.json();
+                    if (!j.ok) throw new Error(j.mensaje || "No se pudo registrar la venta");
 
-        cerrarModalBtn.addEventListener("click", cerrarModal);
-        modalOverlay.addEventListener("click", (e) => {
-            if (e.target === modalOverlay) cerrarModal();
-        });
+                    cerrarModal();
+                    cargar();
+                } catch (err) {
+                    mostrarError(err.message);
+                    btnConfirmar.disabled = false;
+                }
+            });
 
-        formVenta.addEventListener("submit", (e) => {
-            e.preventDefault();
-            const montoIngresado = parseInt(inputMonto.value, 10);
-            if (!montoIngresado || montoIngresado <= 0) return;
+            // ----- Tiempo real: otra persona cobró algo -----
+            function pintarConexion(conectado) {
+                indicador.textContent = conectado ? "En vivo" : "Reconectando…";
+                indicador.classList.toggle("conectado", conectado);
+            }
 
-            diasVentas[0].monto += montoIngresado;
-            diasVentas[0].ventas += 1;
+            cargar();
 
-            renderVentas();
-            cerrarModal();
-        });
-
-        renderVentas();
+            Socket_Pedidos.conectar({
+                alMensaje: msg => { if (msg.tipo === "venta_nueva") cargar(); },
+                alCambiarConexion: pintarConexion,
+                respaldo: cargar,
+                alSinSesion: irALogin
+            });
+        })();
     </script>
 </body>
 </html>

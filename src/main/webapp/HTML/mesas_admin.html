@@ -27,6 +27,7 @@
                     <span class="salon-kicker">SALÓN</span>
                     <h1 class="salon-title">Mesas</h1>
                     <p class="salon-subtitle">Controla el estado de cada mesa en tiempo real.</p>
+                    <span id="indicador_vivo" class="indicador_vivo">Conectando…</span>
                 </div>
 
                 <div class="salon-banner-actions">
@@ -47,7 +48,7 @@
                 <section class="card-panel map-card">
                     <div class="map-card-header">
                         <h2 class="panel-heading">Mapa de mesas</h2>
-                        <span class="total-mesas-label" id="total-mesas-label">12 mesas</span>
+                        <span class="total-mesas-label" id="total-mesas-label">Cargando…</span>
                     </div>
 
                     <div class="dotted-floor" id="contenedor-mesas"></div>
@@ -63,8 +64,8 @@
                         <div class="donut-wrapper">
                             <div class="donut-ring" id="donut-ring">
                                 <div class="donut-hole">
-                                    <span class="donut-ratio" id="donut-ratio">3/12</span>
-                                    <span class="donut-percent" id="donut-percent">25% ocupado</span>
+                                    <span class="donut-ratio" id="donut-ratio">0/0</span>
+                                    <span class="donut-percent" id="donut-percent">0% ocupado</span>
                                 </div>
                             </div>
                         </div>
@@ -80,28 +81,28 @@
                                     <span class="status-dot libre"></span>
                                     <span class="status-name">Libre</span>
                                 </span>
-                                <span class="status-count" id="count-libre">6</span>
+                                <span class="status-count" id="count-libre">0</span>
                             </li>
                             <li class="status-item">
                                 <span class="status-left">
                                     <span class="status-dot ocupada"></span>
                                     <span class="status-name">Ocupada</span>
                                 </span>
-                                <span class="status-count" id="count-ocupada">3</span>
+                                <span class="status-count" id="count-ocupada">0</span>
                             </li>
                             <li class="status-item">
                                 <span class="status-left">
                                     <span class="status-dot sucia"></span>
                                     <span class="status-name">Sucia</span>
                                 </span>
-                                <span class="status-count" id="count-sucia">2</span>
+                                <span class="status-count" id="count-sucia">0</span>
                             </li>
                             <li class="status-item">
                                 <span class="status-left">
                                     <span class="status-dot reservada"></span>
                                     <span class="status-name">Reservada</span>
                                 </span>
-                                <span class="status-count" id="count-reservada">1</span>
+                                <span class="status-count" id="count-reservada">0</span>
                             </li>
                         </ul>
                     </section>
@@ -138,6 +139,8 @@
                 <button type="button" class="btn-primary-wine" id="btn-guardar-estado">Guardar</button>
             </div>
 
+            <p class="modal-error" id="modal-error" hidden></p>
+
             <div class="modal-config-area" id="modal-config-area" style="display: none;">
                 <button type="button" class="btn-primary-wine" id="btn-agregar-mesa">+ Agregar nueva mesa</button>
                 <button type="button" class="btn-secondary-soft" id="btn-quitar-mesa">- Quitar última mesa</button>
@@ -148,156 +151,249 @@
     <!-- Scripts del proyecto -->
     <script src="../JS/header_admin.js"></script>
     <script src="../JS/footer_admin.js"></script>
+    <script src="../JS/socket_pedidos.js"></script>
 
-    <!-- Lógica del mapa, dona y contadores -->
+    <!-- Lógica del mapa, dona y contadores (datos reales de Mesas_Servlet + socket) -->
     <script>
-        let mesas = [
-            { numero: 1,  estado: "libre" },
-            { numero: 2,  estado: "ocupada" },
-            { numero: 3,  estado: "sucia" },
-            { numero: 4,  estado: "libre" },
-            { numero: 5,  estado: "libre" },
-            { numero: 6,  estado: "reservada" },
-            { numero: 7,  estado: "ocupada" },
-            { numero: 8,  estado: "libre" },
-            { numero: 9,  estado: "libre" },
-            { numero: 10, estado: "sucia" },
-            { numero: 11, estado: "libre" },
-            { numero: 12, estado: "ocupada" }
-        ];
+        (function () {
+            const API = "../Mesas_Servlet";
 
-        const etiquetasEstado = {
-            libre: "Libre",
-            ocupada: "Ocupada",
-            sucia: "Sucia",
-            reservada: "Reservada"
-        };
+            let mesas = [];          // [{ id: 1, estado: "Libre" }, ...] tal como viene de la base
 
-        const contenedorMesas = document.getElementById("contenedor-mesas");
-        const donutRing = document.getElementById("donut-ring");
-        const modalOverlay = document.getElementById("modal-overlay");
-        const modalClose = document.getElementById("modal-close");
-        const modalChoices = document.getElementById("modal-choices");
-        const modalActions = document.getElementById("modal-actions");
-        const modalConfigArea = document.getElementById("modal-config-area");
-        const choiceBtns = document.querySelectorAll(".choice-btn");
+            const etiquetasEstado = {
+                libre: "Libre",
+                ocupada: "Ocupada",
+                sucia: "Sucia",
+                reservada: "Reservada"
+            };
 
-        let mesaActiva = null;
-        let estadoElegido = null;
+            const contenedorMesas = document.getElementById("contenedor-mesas");
+            const donutRing = document.getElementById("donut-ring");
+            const modalOverlay = document.getElementById("modal-overlay");
+            const modalClose = document.getElementById("modal-close");
+            const modalChoices = document.getElementById("modal-choices");
+            const modalActions = document.getElementById("modal-actions");
+            const modalConfigArea = document.getElementById("modal-config-area");
+            const modalError = document.getElementById("modal-error");
+            const choiceBtns = document.querySelectorAll(".choice-btn");
+            const indicador = document.getElementById("indicador_vivo");
 
-        function renderMapa() {
-            contenedorMesas.innerHTML = "";
+            let mesaActiva = null;
+            let estadoElegido = null;
 
-            mesas.forEach(mesa => {
-                const btn = document.createElement("button");
-                btn.type = "button";
-                btn.className = `table-circle state-${mesa.estado}`;
-                btn.innerHTML = `
-                    <span class="table-num">${mesa.numero}</span>
-                    <span class="table-state-text">${etiquetasEstado[mesa.estado]}</span>
-                `;
-                btn.addEventListener("click", () => abrirModalMesa(mesa.numero));
-                contenedorMesas.appendChild(btn);
-            });
+            // "Libre" -> "libre" (para clases CSS y conteos)
+            const clave = estado => (estado || "libre").toLowerCase();
 
-            actualizarResumen();
-        }
-
-        function actualizarResumen() {
-            const total = mesas.length;
-            const libres = mesas.filter(m => m.estado === "libre").length;
-            const ocupadas = mesas.filter(m => m.estado === "ocupada").length;
-            const sucias = mesas.filter(m => m.estado === "sucia").length;
-            const reservadas = mesas.filter(m => m.estado === "reservada").length;
-            const porcentaje = total > 0 ? Math.round((ocupadas / total) * 100) : 0;
-            const grados = total > 0 ? Math.round((ocupadas / total) * 360) : 0;
-
-            document.getElementById("total-mesas-label").textContent = `${total} mesas`;
-            document.getElementById("donut-ratio").textContent = `${ocupadas}/${total}`;
-            document.getElementById("donut-percent").textContent = `${porcentaje}% ocupado`;
-
-            document.getElementById("count-libre").textContent = libres;
-            document.getElementById("count-ocupada").textContent = ocupadas;
-            document.getElementById("count-sucia").textContent = sucias;
-            document.getElementById("count-reservada").textContent = reservadas;
-
-            donutRing.style.background = `conic-gradient(#8e1f49 0deg ${grados}deg, #efe2e8 ${grados}deg 360deg)`;
-        }
-
-        function abrirModalMesa(numero) {
-            const mesa = mesas.find(m => m.numero === numero);
-            if (!mesa) return;
-
-            mesaActiva = mesa.numero;
-            estadoElegido = mesa.estado;
-
-            document.getElementById("modal-title").textContent = `Mesa ${mesa.numero}`;
-            document.getElementById("modal-desc").textContent = "Selecciona el nuevo estado para esta mesa:";
-            modalChoices.style.display = "grid";
-            modalActions.style.display = "flex";
-            modalConfigArea.style.display = "none";
-
-            choiceBtns.forEach(b => {
-                b.classList.toggle("active", b.dataset.estado === estadoElegido);
-            });
-
-            modalOverlay.classList.add("open");
-            modalOverlay.setAttribute("aria-hidden", "false");
-        }
-
-        choiceBtns.forEach(btn => {
-            btn.addEventListener("click", () => {
-                estadoElegido = btn.dataset.estado;
-                choiceBtns.forEach(b => b.classList.toggle("active", b === btn));
-            });
-        });
-
-        document.getElementById("btn-guardar-estado").addEventListener("click", () => {
-            const mesa = mesas.find(m => m.numero === mesaActiva);
-            if (mesa && estadoElegido) {
-                mesa.estado = estadoElegido;
-                renderMapa();
+            function irALogin() {
+                location.href = "../HTML/signin.html";
             }
-            cerrarModal();
-        });
 
-        // Botón "Configurar mesas"
-        document.getElementById("btn-config-mesas").addEventListener("click", () => {
-            mesaActiva = null;
-            document.getElementById("modal-title").textContent = "Configurar mesas";
-            document.getElementById("modal-desc").textContent = "Ajusta la cantidad de mesas en el salón:";
-            modalChoices.style.display = "none";
-            modalActions.style.display = "none";
-            modalConfigArea.style.display = "flex";
-
-            modalOverlay.classList.add("open");
-            modalOverlay.setAttribute("aria-hidden", "false");
-        });
-
-        document.getElementById("btn-agregar-mesa").addEventListener("click", () => {
-            const siguiente = mesas.length > 0 ? Math.max(...mesas.map(m => m.numero)) + 1 : 1;
-            mesas.push({ numero: siguiente, estado: "libre" });
-            renderMapa();
-        });
-
-        document.getElementById("btn-quitar-mesa").addEventListener("click", () => {
-            if (mesas.length > 1) {
-                mesas.pop();
-                renderMapa();
+            function mostrarError(texto) {
+                if (!modalError) {                 // por si falta el <p id="modal-error">
+                    if (texto) alert(texto);
+                    return;
+                }
+                modalError.textContent = texto;
+                modalError.hidden = !texto;
             }
-        });
 
-        function cerrarModal() {
-            modalOverlay.classList.remove("open");
-            modalOverlay.setAttribute("aria-hidden", "true");
-        }
+            // ----- Servidor -----
+            function cargar() {
+                return fetch(API)
+                    .then(r => {
+                        if (r.status === 401 || r.status === 403) { irALogin(); throw new Error(); }
+                        if (!r.ok) throw new Error();
+                        return r.json();
+                    })
+                    .then(datos => { mesas = datos; renderMapa(); })
+                    .catch(() => {
+                        contenedorMesas.textContent = "No se pudieron cargar las mesas. Revisa el servidor y la base de datos.";
+                    });
+            }
 
-        modalClose.addEventListener("click", cerrarModal);
-        modalOverlay.addEventListener("click", (e) => {
-            if (e.target === modalOverlay) cerrarModal();
-        });
+            async function enviar(datos) {
+                const r = await fetch(API, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+                    body: new URLSearchParams(datos)
+                });
+                if (r.status === 401) { irALogin(); throw new Error("Inicia sesión"); }
+                const j = await r.json();
+                if (!j.ok) throw new Error(j.mensaje || "No se pudo completar la acción");
+            }
 
-        renderMapa();
+            // ----- Dibujar -----
+            function renderMapa() {
+                contenedorMesas.replaceChildren();
+
+                if (mesas.length === 0) {
+                    contenedorMesas.textContent = "Aún no hay mesas. Usa «Configurar mesas» para agregarlas.";
+                }
+
+                mesas.forEach(mesa => {
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "table-circle state-" + clave(mesa.estado);
+
+                    const num = document.createElement("span");
+                    num.className = "table-num";
+                    num.textContent = mesa.id;
+                    const txt = document.createElement("span");
+                    txt.className = "table-state-text";
+                    txt.textContent = etiquetasEstado[clave(mesa.estado)] || mesa.estado;
+
+                    btn.append(num, txt);
+                    btn.addEventListener("click", () => abrirModalMesa(mesa.id));
+                    contenedorMesas.appendChild(btn);
+                });
+
+                actualizarResumen();
+            }
+
+            function actualizarResumen() {
+                const total = mesas.length;
+                const cuenta = k => mesas.filter(m => clave(m.estado) === k).length;
+                const ocupadas = cuenta("ocupada");
+                const porcentaje = total > 0 ? Math.round((ocupadas / total) * 100) : 0;
+                const grados = total > 0 ? Math.round((ocupadas / total) * 360) : 0;
+
+                document.getElementById("total-mesas-label").textContent = total + (total === 1 ? " mesa" : " mesas");
+                document.getElementById("donut-ratio").textContent = ocupadas + "/" + total;
+                document.getElementById("donut-percent").textContent = porcentaje + "% ocupado";
+
+                document.getElementById("count-libre").textContent = cuenta("libre");
+                document.getElementById("count-ocupada").textContent = ocupadas;
+                document.getElementById("count-sucia").textContent = cuenta("sucia");
+                document.getElementById("count-reservada").textContent = cuenta("reservada");
+
+                donutRing.style.background = `conic-gradient(#8e1f49 0deg ${grados}deg, #efe2e8 ${grados}deg 360deg)`;
+            }
+
+            // ----- Modal -----
+            function abrirModalMesa(id) {
+                const mesa = mesas.find(m => m.id === id);
+                if (!mesa) return;
+
+                mesaActiva = mesa.id;
+                estadoElegido = clave(mesa.estado);
+
+                document.getElementById("modal-title").textContent = "Mesa " + mesa.id;
+                document.getElementById("modal-desc").textContent = "Selecciona el nuevo estado para esta mesa:";
+                modalChoices.style.display = "grid";
+                modalActions.style.display = "flex";
+                modalConfigArea.style.display = "none";
+                mostrarError("");
+
+                choiceBtns.forEach(b => {
+                    b.classList.toggle("active", b.dataset.estado === estadoElegido);
+                });
+
+                modalOverlay.classList.add("open");
+                modalOverlay.setAttribute("aria-hidden", "false");
+            }
+
+            choiceBtns.forEach(btn => {
+                btn.addEventListener("click", () => {
+                    estadoElegido = btn.dataset.estado;
+                    choiceBtns.forEach(b => b.classList.toggle("active", b === btn));
+                });
+            });
+
+            document.getElementById("btn-guardar-estado").addEventListener("click", async (e) => {
+                const boton = e.currentTarget;
+                if (mesaActiva === null || !estadoElegido) return;
+                boton.disabled = true;
+                try {
+                    await enviar({ accion: "estado", id: mesaActiva, estado: estadoElegido });
+                    const mesa = mesas.find(m => m.id === mesaActiva);
+                    if (mesa) mesa.estado = etiquetasEstado[estadoElegido];
+                    renderMapa();
+                    cerrarModal();
+                } catch (err) {
+                    mostrarError(err.message);
+                } finally {
+                    boton.disabled = false;
+                }
+            });
+
+            // Botón "Configurar mesas"
+            document.getElementById("btn-config-mesas").addEventListener("click", () => {
+                mesaActiva = null;
+                document.getElementById("modal-title").textContent = "Configurar mesas";
+                document.getElementById("modal-desc").textContent = "Ajusta la cantidad de mesas en el salón:";
+                modalChoices.style.display = "none";
+                modalActions.style.display = "none";
+                modalConfigArea.style.display = "flex";
+                mostrarError("");
+
+                modalOverlay.classList.add("open");
+                modalOverlay.setAttribute("aria-hidden", "false");
+            });
+
+            async function configurar(accion, boton) {
+                boton.disabled = true;
+                mostrarError("");
+                try {
+                    await enviar({ accion: accion });
+                    await cargar();
+                } catch (err) {
+                    mostrarError(err.message || "No se pudo completar la acción");
+                } finally {
+                    boton.disabled = false;
+                }
+            }
+
+            document.getElementById("btn-agregar-mesa").addEventListener("click", e => configurar("agregar", e.currentTarget));
+            document.getElementById("btn-quitar-mesa").addEventListener("click", e => configurar("quitar", e.currentTarget));
+
+            function cerrarModal() {
+                modalOverlay.classList.remove("open");
+                modalOverlay.setAttribute("aria-hidden", "true");
+                mesaActiva = null;
+            }
+
+            modalClose.addEventListener("click", cerrarModal);
+            modalOverlay.addEventListener("click", (e) => {
+                if (e.target === modalOverlay) cerrarModal();
+            });
+            document.addEventListener("keydown", e => { if (e.key === "Escape") cerrarModal(); });
+
+            // ----- Tiempo real (mesas en vivo) -----
+            function alMensaje(msg) {
+                if (msg.tipo === "mesa_estado") {
+                    const mesa = mesas.find(m => m.id === msg.id);
+                    if (!mesa) { cargar(); return; }
+                    mesa.estado = msg.estado;
+                    renderMapa();
+                    // Si justo la tenemos abierta, marcamos el estado nuevo
+                    if (mesaActiva === msg.id) {
+                        estadoElegido = clave(msg.estado);
+                        choiceBtns.forEach(b => b.classList.toggle("active", b.dataset.estado === estadoElegido));
+                    }
+                }
+                if (msg.tipo === "mesas_cambiaron") cargar();
+            }
+
+            function pintarConexion(conectado) {
+                if (!indicador) return;            // por si falta el <span id="indicador_vivo">
+                indicador.textContent = conectado ? "En vivo" : "Reconectando…";
+                indicador.classList.toggle("conectado", conectado);
+            }
+
+            cargar();
+
+            if (window.Socket_Pedidos) {
+                Socket_Pedidos.conectar({
+                    alMensaje: alMensaje,
+                    alCambiarConexion: pintarConexion,
+                    respaldo: cargar,
+                    alSinSesion: irALogin
+                });
+            } else {
+                console.error("Falta <script src=\"../JS/socket_pedidos.js\"> en mesas_admin.html");
+                setInterval(cargar, 30000);       // sin socket: recarga cada 30 s
+            }
+        })();
     </script>
 </body>
 </html>

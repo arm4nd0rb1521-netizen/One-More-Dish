@@ -520,3 +520,14 @@ body {
         gap: 24px 14px;
     }
 }
+
+/* ===== Mesas con base de datos y en vivo (bloque 4) ===== */
+.salon-banner .indicador_vivo {
+    margin-top: 12px;
+}
+
+.modal-error {
+    margin: 12px 0 0;
+    color: #9b2c2c;
+    font-size: 14px;
+}

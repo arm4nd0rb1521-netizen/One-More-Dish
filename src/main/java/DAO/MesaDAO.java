@@ -66,7 +66,7 @@ public class MesaDAO {
 
         try (Connection con = base_de_datos.conectar();
              Statement st = con.createStatement();
-             ResultSet rs = st.executeQuery("SELECT id_mesa, estado FROM mesa")) {
+             ResultSet rs = st.executeQuery("SELECT id_mesa, estado FROM mesa ORDER BY id_mesa")) {
 
             while (rs.next()) lista.add(mapear(rs));
 

@@ -455,3 +455,31 @@ body {
         padding: 0 4px;
     }
 }
+
+/* ===== Ventas con base de datos (bloque 4) ===== */
+.ventas-banner .indicador_vivo {
+    margin-top: 12px;
+}
+
+.venta-form select {
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid #d9c2cd;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: #fff;
+}
+
+.venta-total-elegido {
+    margin: 4px 0 0;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.venta-error {
+    margin: 4px 0 0;
+    color: #9b2c2c;
+    font-size: 14px;
+}
