@@ -106,6 +106,27 @@ public class EmpleadoDAO {
             return false;
         }
     }
+    
+    public boolean actualizar_sin_contraseña (Empleado e) {
+        String sql = "UPDATE empleado SET nombre = ?, apellido = ?, correo = ?, "
+                   + "id_rol = (SELECT id_rol FROM rol WHERE nombre = ?) WHERE id_empleado = ?";
+
+        try (Connection con = base_de_datos.conectar();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, e.getNombre());
+            ps.setString(2, e.getApellido());
+            ps.setString(3, e.getCorreo());
+            ps.setString(4, e.getRol());
+            ps.setInt(5, e.getId());
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
 
     /** Devuelve el empleado si correo y contraseña coinciden; si no, null. */
     public Empleado login(String correo, String contraseña) {

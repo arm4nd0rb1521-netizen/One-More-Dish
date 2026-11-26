@@ -10,7 +10,7 @@ public class base_de_datos {
 
         String url = "jdbc:mysql://localhost:3306/one_more_dish_db";
         String usuario = "root";
-        String contraseña = "CUB200915GDS";
+        String contraseña = "ces160408";
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");

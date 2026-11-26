@@ -173,7 +173,7 @@ public class VentaDAO {
         try (Connection con = base_de_datos.conectar();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setInt(1, dias - 1);
+            ps.setInt(1, dias - 1); 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     porDia.put(rs.getDate("dia").toString(),
