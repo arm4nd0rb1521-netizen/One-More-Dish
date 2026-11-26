@@ -1,0 +1,313 @@
+[33mcommit db966b7ab0a00e821cce482362ba4863248f3a6e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: XxIanxX52 <castillotovarianalexander@gmail.com>
+Date:   Wed Nov 25 22:13:35 2026 -0600
+
+    Se agregó botones de cerrar sesion
+
+[33mcommit a77beda4036f545142a5f7edc57a89848afbee61[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Dacproplayer <dtapiar2400@alumno.ipn.mx>
+Date:   Wed Nov 25 20:05:14 2026 -0600
+
+    Ventas y mesas
+
+[33mcommit 010a393f523c69dc429e5ec08d2c2d3e46707671[m
+Author: Dacproplayer <dtapiar2400@alumno.ipn.mx>
+Date:   Tue Nov 24 22:48:25 2026 -0600
+
+    Avances del socket
+
+[33mcommit d9a6ef9d6fb6726035252c3c85caa33279654392[m
+Author: Alumno <Alumno@EQUIPO-5>
+Date:   Thu Nov 19 12:58:10 2026 -0600
+
+    cambios
+
+[33mcommit f5dfdfcc0ef7ce205d35133f4bc283cdadc0dd39[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Thu Nov 19 11:10:54 2026 -0600
+
+    subir avance
+
+[33mcommit 976a339a93290a9c2a983078ff91474ac8d156db[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Thu Oct 22 17:25:54 2026 -0600
+
+    safepoint
+
+[33mcommit e48989c076c8e904dd21b26b2adf6f64346bf176[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Thu Oct 22 11:36:41 2026 -0600
+
+    3er intento azure
+
+[33mcommit 573c02b5ddc7cdbdefee32234ed1293c8a82e94c[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Thu Oct 22 11:28:00 2026 -0600
+
+    quitar validacion correo
+
+[33mcommit a12d20fd3cbede59b5c3c96b9fee143da4209786[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Thu Oct 22 10:17:39 2026 -0600
+
+    segundo intento azure
+
+[33mcommit 123bbb6316570aa6183f2415726b1df0c054433b[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Thu Oct 22 10:02:45 2026 -0600
+
+    intento de azure
+
+[33mcommit dab6082271b7e0741cc353426ee38661b2865378[m
+Author: Armando Reyes <arm4nd0rb1521@gmail.com>
+Date:   Thu Oct 22 09:22:05 2026 -0600
+
+    Add or update the Azure App Service build and deployment workflow config
+
+[33mcommit 0e276890563d3f3e953cd0bf94805121c380f7ca[m
+Author: Armando Reyes <arm4nd0rb1521@gmail.com>
+Date:   Wed Oct 21 22:49:09 2026 -0600
+
+    Add or update the Azure App Service build and deployment workflow config
+
+[33mcommit 988415e55b181725ab2d39e556252c3d43d3365b[m
+Author: Dacproplayer <dtapiar2400@alumno.ipn.mx>
+Date:   Wed Oct 21 22:08:54 2026 -0600
+
+    MODULO DE COCINA COMPLETOOOOOOOOO PARA ADMIN Y CHEF
+
+[33mcommit 230ddfa6474a02723e8f52c041155ba8e24b85ff[m
+Merge: c1ca6c6 dd5a68e
+Author: Dacproplayer <dtapiar2400@alumno.ipn.mx>
+Date:   Wed Oct 21 20:51:17 2026 -0600
+
+    Merge branch 'main' of https://github.com/arm4nd0rb1521-netizen/One-More-Dish
+
+[33mcommit dd5a68e156c9214d9446c5f417a58daa1cb9e16f[m
+Author: nellyxThv <nortizg2401@alumno.ipn.mx>
+Date:   Wed Oct 21 20:41:20 2026 -0600
+
+    HOla
+
+[33mcommit c1ca6c6e702f80615d94509738217a81ad1fc64d[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Wed Oct 21 20:27:12 2026 -0600
+
+    subir menu_cliente
+
+[33mcommit 6cfa0556b2dfd61aedaca73d305f421df28a79cf[m
+Author: Dacproplayer <dtapiar2400@alumno.ipn.mx>
+Date:   Tue Oct 20 22:17:13 2026 -0600
+
+    Algunos html's de Admin
+
+[33mcommit 3c9cfdda4fb9cdd697190e6dcd6a2e3763fd225c[m
+Author: nellyxThv <nortizg2401@alumno.ipn.mx>
+Date:   Mon Oct 19 23:19:45 2026 -0600
+
+    HOLA A TODOS CAMBIOS FACHERITOS
+
+[33mcommit 38b35dffdcecb36a3ce86c6028ffa6ae3daa24ab[m
+Author: Dacproplayer <dtapiar2400@alumno.ipn.mx>
+Date:   Sun Oct 18 20:28:02 2026 -0600
+
+    Inicio de cliente , aca , pasado de lanza
+
+[33mcommit 74ca157ad595ed33c845f6bb4b41cba80bac5044[m
+Author: nellyxThv <nortizg2401@alumno.ipn.mx>
+Date:   Fri Oct 16 21:20:53 2026 -0600
+
+    Arregle las rutas del header y footer
+    
+    Agregue el css de cocina y su footerrr
+
+[33mcommit 179ec7eec81884bbdb6b0d1b9f044cca682bb0da[m
+Merge: 84081dc f667184
+Author: nellyxThv <nortizg2401@alumno.ipn.mx>
+Date:   Fri Oct 16 20:47:59 2026 -0600
+
+    Merge branch 'main' of https://github.com/arm4nd0rb1521-netizen/One-More-Dish
+
+[33mcommit f66718421df2a0efab88887436d22703f35b3984[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Thu Oct 15 11:44:08 2026 -0600
+
+    Subir avance 2
+
+[33mcommit 97f671079e3a341b38f23aaa3015e2e55a91e813[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Thu Oct 15 11:41:22 2026 -0600
+
+    Subir avance 2
+
+[33mcommit 84081dcf6fc10e9bbf1fadc4f7e224db4261c419[m
+Author: nellyxThv <nortizg2401@alumno.ipn.mx>
+Date:   Wed Oct 14 23:36:12 2026 -0600
+
+    Contacto, que ofrecemos, para cada persona
+
+[33mcommit c1e62f034c7cdbd48accaf3a6410fae093bdaade[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Wed Oct 14 22:39:53 2026 -0600
+
+    logica menu
+
+[33mcommit 3d3609ad4563636b67f21836a4ebd233299472b3[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Wed Oct 14 20:21:38 2026 -0600
+
+    Agregar html del modulo cliente
+
+[33mcommit 59e6efd918606dbfbc1400ab19b6ce37c19774ac[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Tue Oct 13 19:08:13 2026 -0600
+
+    Terminar validacion de correo con contraseña tipo hash en la bd
+
+[33mcommit a54ca09117fcc23666cbae48b2857f8afc0ef568[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Tue Oct 13 18:47:34 2026 -0600
+
+    Cambio para validar correo
+
+[33mcommit 9a57e29817e30b452ca46f06b42e7c22789b1e91[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Mon Oct 12 21:10:06 2026 -0600
+
+    Arreglar bug en sign in
+
+[33mcommit 66002f81ff279cfdc554499a7e8467ea66f64d5a[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Mon Oct 12 20:57:24 2026 -0600
+
+    Validacion de correo
+
+[33mcommit ac599e8c4c767dff0c4df08087070b443b0154cf[m
+Merge: 9291c35 68b311f
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Mon Oct 12 18:28:34 2026 -0600
+
+    Merge origin/main into main
+
+[33mcommit 68b311f1aa8ff8d29b2fd5f469012427dadf96cd[m
+Author: Dacproplayer <dtapiar2400@alumno.ipn.mx>
+Date:   Sun Oct 11 21:36:12 2026 -0600
+
+    Ahora si el commit bueno de DAOSITOS
+
+[33mcommit 8473b89e9b5960e8693c10255a9098bdd3e7b0d5[m
+Author: Dacproplayer <dtapiar2400@alumno.ipn.mx>
+Date:   Sun Oct 11 21:34:15 2026 -0600
+
+    Creacion de DAOsitos
+
+[33mcommit 4e95462cfe38a9a47a1d1ba809189ed46485f170[m
+Author: XxIanxX52 <castillotovarianalexander@gmail.com>
+Date:   Mon Oct 12 08:00:26 2026 +0900
+
+    Agregacion de clases, herencia de persona
+
+[33mcommit 9291c35ae837e9824d081cfc32399e3779899eaa[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Sun Oct 11 14:15:53 2026 -0600
+
+    correccion para validacion de entrada segun el rol
+
+[33mcommit cf0304792f15987fcef8345bf2b4a223dfd037cf[m
+Author: Dacproplayer <dtapiar2400@alumno.ipn.mx>
+Date:   Sun Oct 11 13:46:06 2026 -0600
+
+    Clases
+
+[33mcommit bbb1974a4dd7d80d0c9ede9fd3301d3ac76e60c6[m
+Author: Dacproplayer <dtapiar2400@alumno.ipn.mx>
+Date:   Sun Oct 11 00:05:37 2026 -0600
+
+    Primeras Clases(modelo)
+
+[33mcommit 2472ca1dc69bd040205b9185ebc188fb538d6da3[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Sat Oct 10 22:59:21 2026 -0600
+
+    Servlet_Signin.add
+
+[33mcommit eae938e83b56c91ffb51fde7da6ea11ce5b6e400[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Sat Oct 10 21:44:58 2026 -0600
+
+    Servelet_Signup listo
+
+[33mcommit 1a2281ee4ea4b32602a356eb186257458ea76305[m
+Merge: 61dbbc8 ac16136
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Sat Oct 10 20:48:36 2026 -0600
+
+    Guardar cambios
+
+[33mcommit 61dbbc8736f3dc23d072ad448d13cf29660e644c[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Sat Oct 10 20:46:00 2026 -0600
+
+    Guardar cambios
+
+[33mcommit ac16136752fdbcbf2bc34b8ff558de704dca4822[m
+Author: nellyxThv <nortizg2401@alumno.ipn.mx>
+Date:   Sat Oct 10 20:08:18 2026 -0600
+
+    CSS PLUSSSSSS EXTRA EXTRA
+
+[33mcommit 67e1d636d4f8106ff2e244c912c639673cf7d319[m
+Author: nellyxThv <nortizg2401@alumno.ipn.mx>
+Date:   Sat Oct 10 19:19:48 2026 -0600
+
+    term and conditions
+
+[33mcommit 0d27b9e7020eed74535ad3adcb8df5c220bed400[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Sat Oct 10 18:19:12 2026 -0600
+
+    termino_y_condiciones.add
+
+[33mcommit ddddb27fe371220626873a81ad432317fec14ca0[m
+Author: nellyxThv <nortizg2401@alumno.ipn.mx>
+Date:   Sat Oct 10 17:43:12 2026 -0600
+
+    Update signin.html
+
+[33mcommit 54d3650ee60eed45e383020a39f1918a8ef787bf[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Sat Oct 10 16:47:08 2026 -0600
+
+    subir avance
+
+[33mcommit 5d99331f32ef9721eb15f0bc083f2738978c5552[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Sat Oct 10 15:34:22 2026 -0600
+
+    Configurar .gitignore para ignorar target y limpiar proyecto
+
+[33mcommit 8b2425ff3cfcb76e6cea85b0b2bea6fa1a50e54c[m
+Author: nellyxThv <nortizg2401@alumno.ipn.mx>
+Date:   Sat Oct 10 15:20:22 2026 -0600
+
+    MAI COMIT ONE :)
+    
+    hola chikos, agrege el css para el header y el footer del inicio y el contacto y todo ese rollote bla, bla,bla
+
+[33mcommit 083f148d8a9dfbd832b8a5a20984983610f8426b[m
+Author: Reyes Becerra Cesar Armando <arm4nd0rb1521@gmail.com>
+Date:   Sat Oct 10 13:25:13 2026 -0600
+
+    Agregar todo otra vez
+
+[33mcommit e14e5ba445888e0d9a6691895031d18039d216a6[m
+Author: Armando <arm4nd0rb1521@gmail.com>
+Date:   Fri Oct 9 08:43:02 2026 -0600
+
+    primer avance
+
+[33mcommit 089cf25b85c5d1ead4cdfa941d3e7472bb400294[m
+Author: Armando <arm4nd0rb1521@gmail.com>
+Date:   Fri Oct 9 08:25:18 2026 -0600
+
+    agregar sign in y sign up
