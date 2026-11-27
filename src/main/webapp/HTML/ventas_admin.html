@@ -18,6 +18,9 @@
 </head>
 <body>
 
+    <!-- 1. Contenedor donde tu script de JS inyectará el Header -->
+    <div id="header-container"></div>
+
     <div class="ventas-page">
         <div class="ventas-container">
 
@@ -81,7 +84,10 @@
         </div>
     </div>
 
-       <!-- Lógica dinámica de tarjetas y gráfica (datos reales de Ventas_Servlet + socket) -->
+    <!-- 2. Contenedor donde tu script de JS inyectará el Footer -->
+    <div id="footer-container"></div>
+
+    <!-- Lógica dinámica de tarjetas y gráfica (datos reales de Ventas_Servlet + socket) -->
     <script>
         (function () {
             const API = "../Ventas_Servlet";
@@ -108,7 +114,6 @@
                 location.href = "../HTML/signin.html";
             }
 
-            // "2026-11-25" -> "Hoy · en curso", "Ayer", "Lun 23 nov"
             function etiquetaDia(fecha, i) {
                 if (i === 0) return "Hoy · en curso";
                 if (i === 1) return "Ayer";
@@ -147,7 +152,6 @@
                 return e;
             }
 
-            // ----- Dibujar -----
             function renderVentas() {
                 kpiGridEl.replaceChildren();
                 chartAreaEl.replaceChildren();
@@ -174,7 +178,6 @@
                     kpiGridEl.append(card);
                 });
 
-                // Gráfica: del día más viejo (izquierda) a hoy (derecha)
                 const maxMonto = Math.max(...diasVentas.map(d => d.monto), 1);
                 diasVentas.slice().reverse().forEach(dia => {
                     const esHoy = dia === diasVentas[0];
@@ -202,7 +205,6 @@
                     });
             }
 
-            // ----- Modal: cobrar un pedido -----
             function mostrarError(texto) {
                 ventaError.textContent = texto;
                 ventaError.hidden = !texto;
@@ -285,7 +287,6 @@
                 }
             });
 
-            // ----- Tiempo real: otra persona cobró algo -----
             function pintarConexion(conectado) {
                 indicador.textContent = conectado ? "En vivo" : "Reconectando…";
                 indicador.classList.toggle("conectado", conectado);
@@ -293,13 +294,19 @@
 
             cargar();
 
-            Socket_Pedidos.conectar({
-                alMensaje: msg => { if (msg.tipo === "venta_nueva") cargar(); },
-                alCambiarConexion: pintarConexion,
-                respaldo: cargar,
-                alSinSesion: irALogin
-            });
+            if (typeof Socket_Pedidos !== 'undefined') {
+                Socket_Pedidos.conectar({
+                    alMensaje: msg => { if (msg.tipo === "venta_nueva") cargar(); },
+                    alCambiarConexion: pintarConexion,
+                    respaldo: cargar,
+                    alSinSesion: irALogin
+                });
+            }
         })();
     </script>
+
+    <!-- Scripts de carga de Header y Footer -->
+    <script src="../JS/header_admin.js"></script>
+    <script src="../JS/footer_admin.js"></script>
 </body>
 </html>
